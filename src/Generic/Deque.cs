@@ -1,9 +1,9 @@
 ﻿namespace MoreCollections.Generic
 {
     /// <summary>
-    /// Represents a strongly typed DoubleEndedQueue of objects
+    /// Represents a strongly typed <see cref="Deque{T}"/> of objects
     /// </summary>
-    /// <typeparam name="T">The type of elements in the Deque</typeparam>
+    /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/></typeparam>
     public class Deque<T>
     {
         private const int _DefaultCapacity = 10;
