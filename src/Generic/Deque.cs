@@ -4,6 +4,10 @@
     /// Represents a strongly typed <see cref="Deque{T}"/> of objects
     /// </summary>
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/></typeparam>
+    /// <remarks>
+    /// As is <see cref="Deque{T}"/> does not support indexing but if it did it would log squared as opposed to constant.
+    /// Refactor for a constant time look up with an internal and extenral zero index with a consistent expansion strucutre.
+    /// </remarks>
     public class Deque<T>
     {
         private const int _DefaultCapacity = 10;
