@@ -97,7 +97,7 @@ namespace MoreCollections.Generic
             return GetRealIndexesFromInternal(frontInternalIndex + externalIndex);
         }
 
-        public (int, int) GetRealIndexesFromInternal(int internalIndex)
+        private (int, int) GetRealIndexesFromInternal(int internalIndex)
         {
             int chunkOffset = (int)IntAbs(internalIndex % chunkSize);
             int chunk = internalIndex / chunkSize;
@@ -107,14 +107,20 @@ namespace MoreCollections.Generic
             }
 
             int internalShardIndex;
-            if (chunk == 0)
+            if (chunk == -1)
             {
-                internalShardIndex = 0; // Work around for Log(0, 2) bug
+                internalShardIndex = 0; // Work around for Log2(0) bug
             }
             else
             {
                 internalShardIndex = (int)Math.Log(IntAbs(chunk + 1), 2); // TODO: integer Log2
             }
+
+            if (internalIndex < 0)
+            {
+                internalShardIndex--;
+            }
+
             int realShard = internalShardIndex + shardingOffset;
             int realShardOffset;
             if (realShard == 0)
@@ -136,7 +142,7 @@ namespace MoreCollections.Generic
                 shardingOffset++;
                 T[][] newShardings = new T[shardings.Length + 1][];
                 shardings.CopyTo(newShardings, 1);
-                newShardings[0] = new T[IntPow2(IntAbs(shardingOffset))];
+                newShardings[0] = new T[IntPow2(IntAbs(shardingOffset)) * chunkSize];
                 shardings = newShardings;
             }
         }
@@ -147,7 +153,7 @@ namespace MoreCollections.Generic
             {
                 T[][] newShardings = new T[shardings.Length + 1][];
                 shardings.CopyTo(newShardings, 0);
-                newShardings[newShardings.Length - 1] = new T[IntPow2(IntAbs(newShardings.Length + shardingOffset))];
+                newShardings[newShardings.Length - 1] = new T[IntPow2(IntAbs(newShardings.Length - 1 - shardingOffset)) * chunkSize];
                 shardings = newShardings;
             }
         }
@@ -219,6 +225,6 @@ namespace MoreCollections.Generic
         /// <summary>
         /// Gets first reserved index using internal indexing system.
         /// </summary>
-        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) + shardingOffset))) - 1) * 2;
+        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) - shardingOffset))) - 1) * 2;
     }
 }
