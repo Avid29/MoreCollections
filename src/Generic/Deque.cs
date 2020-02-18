@@ -72,6 +72,7 @@ namespace MoreCollections.Generic
         public T PopFront()
         {
             T value = this[0];
+            this[0] = default(T);
             frontInternalIndex++;
             return value;
         }
@@ -83,8 +84,27 @@ namespace MoreCollections.Generic
         public T PopBack()
         {
             T value = this[Count - 1];
+            this[Count - 1] = default(T);
             backInternalIndex--;
             return value;
+        }
+
+        /// <summary>
+        /// Gets the value from the front of the <see cref="Deque{T}"/>
+        /// </summary>
+        /// <returns>The frontmost value in the <see cref="Deque{T}"/></returns>
+        public T PeekFront()
+        {
+            return this[0];
+        }
+
+        /// <summary>
+        /// Gets the value from the back of the <see cref="Deque{T}"/>
+        /// </summary>
+        /// <returns>The backmost value in the <see cref="Deque{T}"/></returns>
+        public T PeekBack()
+        {
+            return this[Count - 1];
         }
 
         private (int, int) GetRealIndexesFromExternal(int externalIndex)
