@@ -1,44 +1,57 @@
-﻿namespace MoreCollections.Generic
+﻿using System;
+
+namespace MoreCollections.Generic
 {
     /// <summary>
     /// Represents a strongly typed <see cref="Deque{T}"/> of objects
     /// </summary>
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/></typeparam>
-    /// <remarks>
-    /// As is <see cref="Deque{T}"/> does not support indexing but if it did it would log squared as opposed to constant.
-    /// Refactor for a constant time look up with an internal and extenral zero index with a consistent expansion strucutre.
-    /// </remarks>
     public class Deque<T>
     {
-        private const int _DefaultCapacity = 10;
+        private const int _DefaultChucnkSize = 8;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Deque{T}"/> class
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class.
         /// </summary>
         /// <param name="capacity">Initial capacity of the <see cref="Deque{T}"/></param>
-        public Deque(int capacity = _DefaultCapacity)
+        public Deque(int capacity = _DefaultChucnkSize)
         {
-            _shardings = new T[1][];
-            _shardings[0] = new T[capacity];
-            _frontIndex = _shardings[0].Length;
-            _backIndex = -1;
+            shardings = new T[1][];
+            shardings[0] = new T[capacity];
+            chunkSize = capacity;
+            frontInternalIndex = capacity / 2;
+            backInternalIndex = frontInternalIndex - 1;
+            shardingOffset = 0;
         }
 
         /// <summary>
-        /// Adds an object to the Front of the <see cref="Deque{T}"/>
+        /// Gets or sets the value at <paramref name="index"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the front of the <see cref="Deque{T}"/></param>
+        /// <param name="index"></param>
+        /// <returns>Value at <paramref name="index"/> in <see cref="Deque{T}"/></returns>
+        public T this[int index]
+        {
+            get
+            {
+                (int, int) indexes = GetRealIndexesFromExternal(index);
+                return shardings[indexes.Item1][indexes.Item2];
+            }
+            set
+            {
+                (int, int) indexes = GetRealIndexesFromExternal(index);
+                shardings[indexes.Item1][indexes.Item2] = value;
+            }
+        }
+
+        /// <summary>
+        /// Adds an object to the Front of the <see cref="Deque{T}"/>.
+        /// </summary>
+        /// <param name="value">The object to be added to the front of the <see cref="Deque{T}"/>.</param>
         public void PushFront(T value)
         {
-            CheckThenReserveInFront();
-            _shardings[0][_frontIndex - 1] = value;
-            _frontIndex--;
-            Count++;
-
-            if (_backIndex == -1)
-            {
-                _backIndex = _frontIndex;
-            }
+            frontInternalIndex--;
+            CheckAndReserveFront();
+            this[0] = value;
         }
 
         /// <summary>
@@ -47,15 +60,9 @@
         /// <param name="value">The object to be added to the back of the <see cref="Deque{T}"/></param>
         public void PushBack(T value)
         {
-            CheckThenReserveInBack();
-            _shardings[_shardings.Length - 1][_backIndex + 1] = value;
-            _backIndex++;
-            Count++;
-
-            if (_frontIndex == _shardings[0].Length)
-            {
-                _frontIndex = _backIndex;
-            }
+            backInternalIndex++;
+            CheckAndReserveBack();
+            this[Count - 1] = value;
         }
 
         /// <summary>
@@ -64,11 +71,8 @@
         /// <returns>The object that is removed from the front of the <see cref="Deque{T}"/></returns>
         public T PopFront()
         {
-            T value = PeekFront();
-            _shardings[0][_frontIndex] = default;
-            _frontIndex++;
-            Count--;
-            CheckThenUnreserveInFront();
+            T value = this[0];
+            frontInternalIndex++;
             return value;
         }
 
@@ -78,107 +82,102 @@
         /// <returns>The object that is removed from the back of the <see cref="Deque{T}"/></returns>
         public T PopBack()
         {
-            T value = PeekBack();
-            _shardings[_shardings.Length - 1][_backIndex] = default;
-            _backIndex--;
-            Count--;
-            CheckThenUnreserveInBack();
+            T value = this[Count - 1];
+            backInternalIndex--;
             return value;
         }
 
-        /// <summary>
-        /// Gets the value from the front of the <see cref="Deque{T}"/>
-        /// </summary>
-        /// <returns>The frontmost value in the <see cref="Deque{T}"/></returns>
-        public T PeekFront()
+        private (int, int) GetRealIndexesFromExternal(int externalIndex)
         {
-            // TODO: Check OutOfIndex
-            return _shardings[0][_frontIndex];
+            if (externalIndex >= Count || externalIndex < 0)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            return GetRealIndexesFromInternal(frontInternalIndex + externalIndex);
         }
 
-        /// <summary>
-        /// Gets the value from the back of the <see cref="Deque{T}"/>
-        /// </summary>
-        /// <returns>The backmost value in the <see cref="Deque{T}"/></returns>
-        public T PeekBack()
+        public (int, int) GetRealIndexesFromInternal(int internalIndex)
         {
-            // TODO: Check OutOfIndex
-            return _shardings[_shardings.Length - 1][_backIndex];
+            int chunkOffset = (int)IntAbs(internalIndex % chunkSize);
+            int chunk = internalIndex / chunkSize;
+            if (internalIndex < 0)
+            {
+                chunk--;
+            }
+
+            int internalShardIndex;
+            if (chunk == 0)
+            {
+                internalShardIndex = 0; // Work around for Log(0, 2) bug
+            }
+            else
+            {
+                internalShardIndex = (int)Math.Log(IntAbs(chunk + 1), 2); // TODO: integer Log2
+            }
+            int realShard = internalShardIndex + shardingOffset;
+            int realShardOffset;
+            if (realShard == 0)
+            {
+                realShardOffset = chunkOffset;
+            }
+            else
+            {
+                int outOfShardChunks = IntPow2(IntAbs(internalShardIndex)) - 1;
+                realShardOffset = ((chunk - outOfShardChunks) * chunkSize) + chunkOffset;
+            }
+            return (realShard, realShardOffset);
         }
 
-        private void CheckThenReserveInFront()
+        private void CheckAndReserveFront()
         {
-            if (_frontIndex != 0)
+            if (firstReservedInternalIndex == frontInternalIndex)
             {
-                // No need to increase capacity
-                return;
+                shardingOffset++;
+                T[][] newShardings = new T[shardings.Length + 1][];
+                shardings.CopyTo(newShardings, 1);
+                newShardings[0] = new T[IntPow2(IntAbs(shardingOffset))];
+                shardings = newShardings;
             }
-
-            // Makes a new shards array
-            T[][] newShards = new T[_shardings.Length + 1][];
-            _shardings.CopyTo(newShards, 1);
-            newShards[0] = new T[Count]; // Doubles capacity
-            _shardings = newShards;
-
-            // Reset _FrontIndex
-            _frontIndex = _shardings[0].Length;
         }
 
-        private void CheckThenReserveInBack()
+        private void CheckAndReserveBack()
         {
-            if (_backIndex + 1 != _shardings[_shardings.Length - 1].Length)
+            if (lastReservedInternalIndex == backInternalIndex)
             {
-                // No need to increase capacity
-                return;
+                T[][] newShardings = new T[shardings.Length + 1][];
+                shardings.CopyTo(newShardings, 0);
+                newShardings[newShardings.Length - 1] = new T[IntPow2(IntAbs(newShardings.Length + shardingOffset))];
+                shardings = newShardings;
             }
-
-            T[][] newShards = new T[_shardings.Length + 1][];
-            _shardings.CopyTo(newShards, 0);
-            newShards[newShards.Length - 1] = new T[Capacity]; // Doubles capacity
-            _shardings = newShards;
-
-            // Reset back index
-            _backIndex = -1;
         }
 
-        private void CheckThenUnreserveInFront()
+        private int IntPow2(uint exponent)
         {
-            if (_shardings.Length == 1 || _frontIndex != _shardings[0].Length)
+            int log = 1;
+            for (uint i = 0; i < exponent; i++)
             {
-                // No need or no room to remove shard
-                return;
+                log *= 2;
             }
-
-            T[][] newShards = new T[_shardings.Length - 1][];
-            for (int i = 1; i < _shardings.Length; i++)
-            {
-                newShards[i - 1] = _shardings[i];
-            }
-
-            _shardings = newShards;
-            _frontIndex = 0;
+            return log;
         }
 
-        private void CheckThenUnreserveInBack()
+        private uint IntAbs(int value)
         {
-            if (_shardings.Length == 1 || _backIndex != -1)
+            if (value < 0)
             {
-                // No need or no room to remove shard
-                return;
+                return (uint)(value * -1);
             }
-
-            T[][] newShards = new T[_shardings.Length - 1][];
-            for (int i = 0; i < newShards.Length; i++)
+            else
             {
-                newShards[i] = _shardings[i];
+                return (uint)value;
             }
-            _shardings = newShards;
         }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="Deque{T}"/>
         /// </summary>
-        public int Count { get; private set; }
+        public int Count => (backInternalIndex - frontInternalIndex) + 1;
 
         /// <summary>
         /// Gets the total number of elements the internal data structure can hold without resizing.
@@ -188,7 +187,7 @@
             get
             {
                 int capacity = 0;
-                foreach (T[] shard in _shardings)
+                foreach (T[] shard in shardings)
                 {
                     capacity += shard.Length;
                 }
@@ -197,10 +196,29 @@
             }
         }
 
-        private T[][] _shardings;
+        private T[][] shardings;
 
-        private int _frontIndex;
+        private int frontInternalIndex;
+        private int backInternalIndex;
 
-        private int _backIndex;
+        /// <summary>
+        /// Minimum number of items in a shard.
+        /// </summary>
+        private int chunkSize;
+
+        /// <summary>
+        /// Number of negative shards in <see cref="shardings"/> array.
+        /// </summary>
+        private int shardingOffset;
+
+        /// <summary>
+        /// Gets last reserved index using internal indexing system.
+        /// </summary>
+        private int firstReservedInternalIndex => (IntPow2(IntAbs(shardingOffset)) - 1) * 2;
+
+        /// <summary>
+        /// Gets first reserved index using internal indexing system.
+        /// </summary>
+        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) + shardingOffset))) - 1) * 2;
     }
 }
