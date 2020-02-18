@@ -99,38 +99,38 @@ namespace MoreCollections.Generic
 
         private (int, int) GetRealIndexesFromInternal(int internalIndex)
         {
-            int chunkOffset = (int)IntAbs(internalIndex % chunkSize);
-            int chunk = internalIndex / chunkSize;
+            int chunkOffset;
             if (internalIndex < 0)
+            {
+                chunkOffset = (internalIndex + 1) % chunkSize * -1;
+            }
+            else
+            {
+                chunkOffset = internalIndex % chunkSize;
+            }
+
+            int chunk = internalIndex / chunkSize;
+            if (internalIndex < 0 && internalIndex % chunkSize != 0)
             {
                 chunk--;
             }
 
-            int internalShardIndex;
-            if (chunk == -1)
-            {
-                internalShardIndex = 0; // Work around for Log2(0) bug
-            }
-            else
-            {
-                internalShardIndex = (int)Math.Log(IntAbs(chunk + 1), 2); // TODO: integer Log2
-            }
-
+            int internalShardIndex = (int)Math.Log(IntAbs(chunk) + 1, 2);
             if (internalIndex < 0)
             {
-                internalShardIndex--;
+                internalShardIndex *= -1;
             }
 
             int realShard = internalShardIndex + shardingOffset;
             int realShardOffset;
-            if (realShard == 0)
+            if (internalShardIndex == 0)
             {
                 realShardOffset = chunkOffset;
             }
             else
             {
                 int outOfShardChunks = IntPow2(IntAbs(internalShardIndex)) - 1;
-                realShardOffset = ((chunk - outOfShardChunks) * chunkSize) + chunkOffset;
+                realShardOffset = (((int)IntAbs(chunk) - outOfShardChunks) * chunkSize) + chunkOffset;
             }
             return (realShard, realShardOffset);
         }
@@ -220,7 +220,7 @@ namespace MoreCollections.Generic
         /// <summary>
         /// Gets last reserved index using internal indexing system.
         /// </summary>
-        private int firstReservedInternalIndex => (IntPow2(IntAbs(shardingOffset)) - 1) * 2;
+        private int firstReservedInternalIndex => (IntPow2(IntAbs(shardingOffset)) - 1) * -2 * chunkSize;
 
         /// <summary>
         /// Gets first reserved index using internal indexing system.
