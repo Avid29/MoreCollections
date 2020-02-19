@@ -106,6 +106,7 @@ namespace MoreCollections.Generic
             T value = this[Count - 1];
             this[Count - 1] = default(T);
             backInternalIndex--;
+            CheckAndUnreserveBack();
             return value;
         }
 
@@ -176,6 +177,47 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
+        /// Checks if the last chunk is empty and clears it from reference
+        /// </summary>
+        private void CheckAndUnreserveBack()
+        {
+            if (GetInternalChunkFromInternal(backInternalIndex) < backInternalChunkIndex)
+            {
+                int realChunk = backInternalChunkIndex - frontInternalChunkIndex;
+                map[realChunk] = null;
+                backInternalChunkIndex--;
+            }
+        }
+
+        private int GetInternalChunkFromInternal(int internalIndex)
+        {
+            if (internalIndex < 0)
+            {
+                // index + 1 divided by chunksize, - 1, rounded down is the chunk
+                // 
+                // if (chunksize = 2)
+                // -2 -1
+                // -----
+                // -3 -1
+                // -4 -2
+
+                return ((internalIndex + 1) / chunkSize) - 1;
+            }
+            else
+            {
+                // index divided by chunksize rounded down is the chunk
+                //
+                // if (chunksize = 2)
+                // 0 1 2 3
+                // -------
+                // 0 2 4 6
+                // 1 3 5 7
+
+                return internalIndex / chunkSize;
+            }
+        }
+
+        /// <summary>
         /// Gets the real chunk index and chunk offset from an external index
         /// </summary>
         /// <param name="externalIndex">External index position in <see cref="Deque{T}"/></param>
@@ -197,32 +239,7 @@ namespace MoreCollections.Generic
         /// <returns>(realChunk, chunkOffset)</returns>
         private (int, int) GetRealIndexesFromInternal(int internalIndex)
         {
-
-            int internalChunk;
-            if (internalIndex < 0)
-            {
-                // index + 1 divided by chunksize, - 1, rounded down is the chunk
-                // 
-                // if (chunksize = 2)
-                // -2 -1
-                // -----
-                // -3 -1
-                // -4 -2
-
-                internalChunk = ((internalIndex + 1) / chunkSize) - 1;
-            }
-            else
-            {
-                // index divided by chunksize rounded down is the chunk
-                //
-                // if (chunksize = 2)
-                // 0 1 2 3
-                // -------
-                // 0 2 4 6
-                // 1 3 5 7
-
-                internalChunk = internalIndex / chunkSize;
-            }
+            int internalChunk = GetInternalChunkFromInternal(internalIndex);
 
             // index mod chunksize is how deep in the chunk the index is
             //
