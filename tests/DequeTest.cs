@@ -76,7 +76,23 @@ namespace CollectionsTest
         }
 
         [TestMethod]
-        public void Count1()
+        public void PopBack()
+        {
+            Deque<int> deque = new Deque<int>(2);
+            deque.PushBack(1);
+            deque.PushBack(2);
+            deque.PopBack();
+            deque.PushBack(3);
+
+            int front = deque.PeekFront();
+            Assert.AreEqual(1, front);
+
+            int back = deque.PeekBack();
+            Assert.AreEqual(3, back);
+        }
+
+        [TestMethod]
+        public void Count()
         {
             Deque<int> deque = new Deque<int>();
             deque.PushFront(2);
@@ -88,7 +104,7 @@ namespace CollectionsTest
         }
 
         [TestMethod]
-        public void Capacity1()
+        public void Capacity()
         {
             Deque<int> deque = new Deque<int>(8);
             deque.PushFront(2);
