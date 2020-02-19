@@ -5,3 +5,8 @@
 /.vs
 /More-Collections/obj
 /src/obj
+/CollectionsTest/bin/Debug/netcoreapp3.1
+/CollectionsTest/obj
+/src/bin/Debug/netstandard2.0
+/tests/bin/Debug/netcoreapp3.1
+/tests/obj
