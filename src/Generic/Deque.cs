@@ -181,10 +181,9 @@ namespace MoreCollections.Generic
 
         private void CheckAndUnreserveBack()
         {
-            // The newInternalBackIndex if a shard is removed
-            int newInternalBackIndex = (IntPow2(IntAbs(((shardings.Length - 1) - shardingOffset))) - 1) * chunkSize;
-
-            if (backInternalIndex <= newInternalBackIndex)
+            // Checks if the last reserved shard is neccessary
+            (int, int) reals = GetRealIndexesFromInternal(Count);
+            if (reals.Item1 <= shardings.Length)
             {
                 T[][] newShardings = new T[shardings.Length - 1][];
                 for (int i = 0; i < newShardings.Length; i++)
@@ -262,6 +261,6 @@ namespace MoreCollections.Generic
         /// <summary>
         /// Gets first reserved index using internal indexing system.
         /// </summary>
-        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) - shardingOffset))) - 1) * chunkSize;
+        private int lastReservedInternalIndex => (IntPow2(IntAbs(shardings.Length - shardingOffset)) - 1) * chunkSize;
     }
 }
