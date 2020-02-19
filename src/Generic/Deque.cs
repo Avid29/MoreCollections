@@ -86,6 +86,7 @@ namespace MoreCollections.Generic
             T value = this[Count - 1];
             this[Count - 1] = default(T);
             backInternalIndex--;
+            CheckAndUnreserveBack();
             return value;
         }
 
@@ -174,6 +175,22 @@ namespace MoreCollections.Generic
                 T[][] newShardings = new T[shardings.Length + 1][];
                 shardings.CopyTo(newShardings, 0);
                 newShardings[newShardings.Length - 1] = new T[IntPow2(IntAbs(newShardings.Length - 1 - shardingOffset)) * chunkSize];
+                shardings = newShardings;
+            }
+        }
+
+        private void CheckAndUnreserveBack()
+        {
+            // The newInternalBackIndex if a shard is removed
+            int newInternalBackIndex = (IntPow2(IntAbs(((shardings.Length - 1) - shardingOffset))) - 1) * chunkSize;
+
+            if (backInternalIndex <= newInternalBackIndex)
+            {
+                T[][] newShardings = new T[shardings.Length - 1][];
+                for (int i = 0; i < newShardings.Length; i++)
+                {
+                    newShardings[i] = shardings[i];
+                }
                 shardings = newShardings;
             }
         }
