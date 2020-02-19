@@ -51,6 +51,7 @@ namespace MoreCollections.Generic
         public void PushFront(T value)
         {
             frontInternalIndex--;
+            CheckAndReserveFront();
             this[0] = value;
         }
 
@@ -61,6 +62,7 @@ namespace MoreCollections.Generic
         public void PushBack(T value)
         {
             backInternalIndex++;
+            CheckAndReserveBack();
             this[Count - 1] = value;
         }
 
@@ -104,6 +106,32 @@ namespace MoreCollections.Generic
         public T PeekBack()
         {
             return this[Count - 1];
+        }
+
+        private void CheckAndReserveFront()
+        {
+            if (frontInternalIndex < firstReservedInternalIndex)
+            {
+                // TODO: Reserve extra array space for more chunks
+                T[][] newMap = new T[map.Length + 1][];
+                map.CopyTo(newMap, 1);
+                newMap[0] = new T[chunkSize];
+                map = newMap;
+                frontInternalChunkIndex--;
+            }
+        }
+
+        private void CheckAndReserveBack()
+        {
+            if (backInternalIndex >= lastReservedInternalIndex)
+            {
+                // TODO: Reserve extra array space for more chunks
+                T[][] newMap = new T[map.Length + 1][];
+                map.CopyTo(newMap, 0);
+                newMap[newMap.Length - 1] = new T[chunkSize];
+                map = newMap;
+                backInternalChunkIndex++;
+            }
         }
 
         private (int, int) GetRealIndexesFromExternal(int externalIndex)
