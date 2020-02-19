@@ -22,6 +22,11 @@ namespace MoreCollections.Generic
         /// <param name="capacity">Initial capacity of the <see cref="Deque{T}"/></param>
         public Deque(int capacity)
         {
+            if (capacity < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(capacity), capacity, "Capacity can not be less than 1.");
+            }
+
             map = new T[3][];
             map[1] = new T[capacity];
             chunkSize = capacity;
