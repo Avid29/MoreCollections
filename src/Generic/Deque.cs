@@ -8,20 +8,26 @@ namespace MoreCollections.Generic
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/></typeparam>
     public class Deque<T>
     {
-        private const int _DefaultChucnkSize = 8;
+        private const int _DefaultChunkSize = 8;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Deque{T}"/> class.
         /// </summary>
+        public Deque() : this(_DefaultChunkSize) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class with an initial capcity of <paramref name="capacity"/>.
+        /// </summary>
         /// <param name="capacity">Initial capacity of the <see cref="Deque{T}"/></param>
-        public Deque(int capacity = _DefaultChucnkSize)
+        public Deque(int capacity)
         {
-            shardings = new T[1][];
-            shardings[0] = new T[capacity];
+            map = new T[3][];
+            map[1] = new T[capacity];
             chunkSize = capacity;
             frontInternalIndex = capacity / 2;
             backInternalIndex = frontInternalIndex - 1;
-            shardingOffset = 0;
+            frontInternalChunkIndex = -1;
+            backInternalChunkIndex = 1;
         }
 
         /// <summary>
@@ -34,12 +40,12 @@ namespace MoreCollections.Generic
             get
             {
                 (int, int) indexes = GetRealIndexesFromExternal(index);
-                return shardings[indexes.Item1][indexes.Item2];
+                return map[indexes.Item1][indexes.Item2];
             }
             set
             {
                 (int, int) indexes = GetRealIndexesFromExternal(index);
-                shardings[indexes.Item1][indexes.Item2] = value;
+                map[indexes.Item1][indexes.Item2] = value;
             }
         }
 
@@ -107,6 +113,59 @@ namespace MoreCollections.Generic
             return this[Count - 1];
         }
 
+        /// <summary>
+        /// Make sure the space for the next front value is allocated
+        /// </summary>
+        private void CheckAndReserveFront()
+        {
+            if (frontInternalIndex < firstReservedInternalIndex)
+            {
+                // More than one chunk space is reserved at a time, but the only one of the new chunks is created
+                int additionalChunks = frontInternalChunkIndex * frontInternalChunkIndex;
+                T[][] newMap = new T[map.Length + additionalChunks][];
+                map.CopyTo(newMap, additionalChunks);
+                newMap[additionalChunks] = new T[chunkSize];
+                map = newMap;
+                frontInternalChunkIndex -= additionalChunks;
+            }
+
+            // Make sure chunk exists before adding a value to it
+            int realChunk = GetRealIndexesFromInternal(frontInternalIndex).Item1;
+            if (map[realChunk] == null)
+            {
+                map[realChunk] = new T[chunkSize];
+            }
+        }
+
+        /// <summary>
+        /// Make sure the space for the next back value is allocated
+        /// </summary>
+        private void CheckAndReserveBack()
+        {
+            if (backInternalIndex >= lastReservedInternalIndex)
+            {
+                // More than one chunk space is reserved at a time, but the only one of the new chunks is created
+                int additionalChunks = backInternalChunkIndex * backInternalChunkIndex;
+                T[][] newMap = new T[map.Length + additionalChunks][];
+                map.CopyTo(newMap, 0);
+                newMap[backInternalChunkIndex + 1] = new T[chunkSize];
+                map = newMap;
+                backInternalChunkIndex++;
+            }
+
+            // Make sure chunk exists before adding a value to it
+            int realChunk = GetRealIndexesFromInternal(backInternalIndex).Item1;
+            if (map[realChunk] == null)
+            {
+                map[realChunk] = new T[chunkSize];
+            }
+        }
+
+        /// <summary>
+        /// Gets the real chunk index and chunk offset from an external index
+        /// </summary>
+        /// <param name="externalIndex">External index position in <see cref="Deque{T}"/></param>
+        /// <returns>(realChunk, chunkOffset)</returns>
         private (int, int) GetRealIndexesFromExternal(int externalIndex)
         {
             if (externalIndex >= Count || externalIndex < 0)
@@ -117,87 +176,62 @@ namespace MoreCollections.Generic
             return GetRealIndexesFromInternal(frontInternalIndex + externalIndex);
         }
 
+        /// <summary>
+        /// Gets the real chunk index and chunk offset from an internal index
+        /// </summary>
+        /// <param name="internalIndex">Internal index position in <see cref="Deque{T}"/></param>
+        /// <returns>(realChunk, chunkOffset)</returns>
         private (int, int) GetRealIndexesFromInternal(int internalIndex)
         {
-            int chunkOffset;
+
+            int internalChunk;
             if (internalIndex < 0)
             {
-                chunkOffset = (internalIndex + 1) % chunkSize * -1;
+                // index + 1 divided by chunksize, - 1, rounded down is the chunk
+                // 
+                // if (chunksize = 2)
+                // -2 -1
+                // -----
+                // -3 -1
+                // -4 -2
+
+                internalChunk = ((internalIndex + 1) / chunkSize) - 1;
             }
             else
             {
-                chunkOffset = internalIndex % chunkSize;
+                // index divided by chunksize rounded down is the chunk
+                //
+                // if (chunksize = 2)
+                // 0 1 2 3
+                // -------
+                // 0 2 4 6
+                // 1 3 5 7
+
+                internalChunk = internalIndex / chunkSize;
             }
 
-            int chunk = internalIndex / chunkSize;
-            if (internalIndex < 0 && internalIndex % chunkSize != 0)
+            // index mod chunksize is how deep in the chunk the index is
+            //
+            // if (chunksize = 3)
+            //    0 1 2 3
+            // ----------
+            // 0: 0 3 6 9
+            // 1: 1 4 7 10
+            // 2: 2 5 8 11
+            int chunkOffset = internalIndex % chunkSize;
+            if (chunkOffset < 0)
             {
-                chunk--;
+                // If negative modulus, add chunksize
+                chunkOffset += chunkSize;
             }
 
-            int internalShardIndex = (int)Math.Log(IntAbs(chunk) + 1, 2);
-            if (internalIndex < 0)
-            {
-                internalShardIndex *= -1;
-            }
-
-            int realShard = internalShardIndex + shardingOffset;
-            int realShardOffset;
-            if (internalShardIndex == 0)
-            {
-                realShardOffset = chunkOffset;
-            }
-            else
-            {
-                int outOfShardChunks = IntPow2(IntAbs(internalShardIndex)) - 1;
-                realShardOffset = (((int)IntAbs(chunk) - outOfShardChunks) * chunkSize) + chunkOffset;
-            }
-            return (realShard, realShardOffset);
-        }
-
-        private void CheckAndReserveFront()
-        {
-            if (firstReservedInternalIndex == frontInternalIndex)
-            {
-                shardingOffset++;
-                T[][] newShardings = new T[shardings.Length + 1][];
-                shardings.CopyTo(newShardings, 1);
-                newShardings[0] = new T[IntPow2(IntAbs(shardingOffset)) * chunkSize];
-                shardings = newShardings;
-            }
-        }
-
-        private void CheckAndReserveBack()
-        {
-            if (lastReservedInternalIndex == backInternalIndex)
-            {
-                T[][] newShardings = new T[shardings.Length + 1][];
-                shardings.CopyTo(newShardings, 0);
-                newShardings[newShardings.Length - 1] = new T[IntPow2(IntAbs(newShardings.Length - 1 - shardingOffset)) * chunkSize];
-                shardings = newShardings;
-            }
-        }
-
-        private int IntPow2(uint exponent)
-        {
-            int log = 1;
-            for (uint i = 0; i < exponent; i++)
-            {
-                log *= 2;
-            }
-            return log;
-        }
-
-        private uint IntAbs(int value)
-        {
-            if (value < 0)
-            {
-                return (uint)(value * -1);
-            }
-            else
-            {
-                return (uint)value;
-            }
+            // finds the map array index from chunk and frontChunk
+            //
+            // 
+            // RealChunk     :  0 1 2 3
+            // internalChunk : -1 0 1 2
+            int realChunk = internalChunk - frontInternalChunkIndex;
+            return (realChunk, chunkOffset);
         }
 
         /// <summary>
@@ -213,7 +247,7 @@ namespace MoreCollections.Generic
             get
             {
                 int capacity = 0;
-                foreach (T[] shard in shardings)
+                foreach (T[] shard in map)
                 {
                     capacity += shard.Length;
                 }
@@ -222,10 +256,27 @@ namespace MoreCollections.Generic
             }
         }
 
-        private T[][] shardings;
+        private T[][] map;
 
+        /// <summary>
+        /// internal index of first item
+        /// </summary>
         private int frontInternalIndex;
+
+        /// <summary>
+        /// internal index of last item
+        /// </summary>
         private int backInternalIndex;
+
+        /// <summary>
+        /// internal chunk index of first item in the map
+        /// </summary>
+        private int frontInternalChunkIndex;
+
+        /// <summary>
+        /// internal chunk index of last item in the map
+        /// </summary>
+        private int backInternalChunkIndex;
 
         /// <summary>
         /// Minimum number of items in a shard.
@@ -233,18 +284,13 @@ namespace MoreCollections.Generic
         private int chunkSize;
 
         /// <summary>
-        /// Number of negative shards in <see cref="shardings"/> array.
-        /// </summary>
-        private int shardingOffset;
-
-        /// <summary>
         /// Gets last reserved index using internal indexing system.
         /// </summary>
-        private int firstReservedInternalIndex => (IntPow2(IntAbs(shardingOffset)) - 1) * -2 * chunkSize;
+        private int firstReservedInternalIndex => frontInternalChunkIndex * chunkSize;
 
         /// <summary>
         /// Gets first reserved index using internal indexing system.
         /// </summary>
-        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) - shardingOffset))) - 1) * 2;
+        private int lastReservedInternalIndex => (backInternalChunkIndex + 1) * chunkSize - 1;
     }
 }
