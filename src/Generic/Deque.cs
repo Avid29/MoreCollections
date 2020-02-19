@@ -16,13 +16,13 @@ namespace MoreCollections.Generic
         /// <param name="capacity">Initial capacity of the <see cref="Deque{T}"/></param>
         public Deque(int capacity = _DefaultChucnkSize)
         {
-            map = new T[1][];
-            map[0] = new T[capacity];
+            map = new T[3][];
+            map[1] = new T[capacity];
             chunkSize = capacity;
             frontInternalIndex = capacity / 2;
             backInternalIndex = frontInternalIndex - 1;
-            frontInternalChunkIndex = 0;
-            backInternalChunkIndex = 0;
+            frontInternalChunkIndex = -1;
+            backInternalChunkIndex = 1;
         }
 
         /// <summary>
@@ -112,12 +112,17 @@ namespace MoreCollections.Generic
         {
             if (frontInternalIndex < firstReservedInternalIndex)
             {
-                // TODO: Reserve extra array space for more chunks
-                T[][] newMap = new T[map.Length + 1][];
-                map.CopyTo(newMap, 1);
-                newMap[0] = new T[chunkSize];
+                int additionalChunks = frontInternalChunkIndex * frontInternalChunkIndex;
+                T[][] newMap = new T[map.Length + additionalChunks][];
+                map.CopyTo(newMap, additionalChunks);
+                newMap[additionalChunks] = new T[chunkSize];
                 map = newMap;
-                frontInternalChunkIndex--;
+                frontInternalChunkIndex -= additionalChunks;
+            }
+            int realChunk = GetRealIndexesFromInternal(frontInternalIndex).Item1;
+            if (map[realChunk] == null)
+            {
+                map[realChunk] = new T[chunkSize];
             }
         }
 
@@ -125,12 +130,17 @@ namespace MoreCollections.Generic
         {
             if (backInternalIndex >= lastReservedInternalIndex)
             {
-                // TODO: Reserve extra array space for more chunks
-                T[][] newMap = new T[map.Length + 1][];
+                int additionalChunks = backInternalChunkIndex * backInternalChunkIndex;
+                T[][] newMap = new T[map.Length + additionalChunks][];
                 map.CopyTo(newMap, 0);
-                newMap[newMap.Length - 1] = new T[chunkSize];
+                newMap[backInternalChunkIndex + 1] = new T[chunkSize];
                 map = newMap;
                 backInternalChunkIndex++;
+            }
+            int realChunk = GetRealIndexesFromInternal(backInternalIndex).Item1;
+            if (map[realChunk] == null)
+            {
+                map[realChunk] = new T[chunkSize];
             }
         }
 
