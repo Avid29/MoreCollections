@@ -245,6 +245,6 @@ namespace MoreCollections.Generic
         /// <summary>
         /// Gets first reserved index using internal indexing system.
         /// </summary>
-        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) - shardingOffset))) - 1) * 2;
+        private int lastReservedInternalIndex => (IntPow2(IntAbs(((shardings.Length) - shardingOffset))) - 1) * chunkSize;
     }
 }
