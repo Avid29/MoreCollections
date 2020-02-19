@@ -76,6 +76,22 @@ namespace CollectionsTest
         }
 
         [TestMethod]
+        public void PopFront()
+        {
+            Deque<int> deque = new Deque<int>(2);
+            deque.PushFront(1);
+            deque.PushFront(2);
+            deque.PopFront();
+            deque.PushFront(3);
+
+            int front = deque.PeekFront();
+            Assert.AreEqual(3, front);
+
+            int back = deque.PeekBack();
+            Assert.AreEqual(1, back);
+        }
+
+        [TestMethod]
         public void PopBack()
         {
             Deque<int> deque = new Deque<int>(2);
