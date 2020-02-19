@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) MoreCollections. All rights reserved.
+
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,15 +12,16 @@ using System.Threading;
 namespace MoreCollections.Observable
 {
     /// <summary>
-    /// Represents a collection of key/value pairs that provides notifcations when updated
+    /// Represents a collection of key/value pairs that provides notifcations when updated.
     /// </summary>
-    /// <typeparam name="TKey">The type of the keys in the Fictionary</typeparam>
-    /// <typeparam name="TValue">The type of the values in the Dictionary</typeparam>
+    /// <typeparam name="TKey">The type of the keys in the Fictionary.</typeparam>
+    /// <typeparam name="TValue">The type of the values in the Dictionary.</typeparam>
     public class ObservableDictionary<TKey, TValue> :
         ICollection<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>,
         IEnumerable<TValue>,
         INotifyCollectionChanged, INotifyPropertyChanged
     {
+        private readonly string[] _propertiesToUpdate = new string[] { "Count", "Keys", "Values" };
         private readonly SynchronizationContext _context;
         private ConcurrentDictionary<TKey, TValue> _dictionary;
 
@@ -55,14 +58,17 @@ namespace MoreCollections.Observable
         public ICollection<TKey> Keys => _dictionary.Keys;
 
         /// <summary>
-        /// Gets an <see cref="ICollection{TValue}"/> containing the values in the <see cref="ObservableDictionary{TKey, TValue}"/>
+        /// Gets an <see cref="ICollection{TValue}"/> containing the values in the <see cref="ObservableDictionary{TKey, TValue}"/>.
         /// </summary>
         public ICollection<TValue> Values => _dictionary.Values;
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="ObservableDictionary{TKey, TValue}"/>
+        /// Gets the number of elements contained in the <see cref="ObservableDictionary{TKey, TValue}"/>.
         /// </summary>
         public int Count => _dictionary.Count;
+
+        /// <inheritdoc/>
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         /// <summary>
         /// Gets or sets the element with the specified key.
@@ -76,7 +82,7 @@ namespace MoreCollections.Observable
         }
 
         /// <summary>
-        /// Adds an element with the provided key and value to the <see cref="ObservableDictionary{TKey, TValue}"/>
+        /// Adds an element with the provided key and value to the <see cref="ObservableDictionary{TKey, TValue}"/>.
         /// </summary>
         /// <param name="key">The object to use as the key of the element to add.</param>
         /// <param name="value">The object to use as the value of the element to add.</param>
@@ -88,7 +94,7 @@ namespace MoreCollections.Observable
         /// <summary>
         /// Determines whether the <see cref="ObservableDictionary{TKey, TValue}"/> contains an element with the specified key.
         /// </summary>
-        /// <param name="key">The key to locate in the <see cref="ObservableDictionary{TKey, TValue}"/></param>
+        /// <param name="key">The key to locate in the <see cref="ObservableDictionary{TKey, TValue}"/>.</param>
         /// <returns> true if the <see cref="ObservableDictionary{TKey, TValue}"/> contains an element with the key; otherwise, false.</returns>
         public bool ContainsKey(TKey key)
         {
@@ -96,12 +102,12 @@ namespace MoreCollections.Observable
         }
 
         /// <summary>
-        /// Removes the element with the specified key from the <see cref="ObservableDictionary{TKey, TValue}"/>
+        /// Removes the element with the specified key from the <see cref="ObservableDictionary{TKey, TValue}"/>.
         /// </summary>
         /// <param name="key">The key of the element to remove.</param>
         /// <returns>
         /// true if the element is successfully removed; otherwise, false.
-        /// This method also returns false if key was not found in the original <see cref="ObservableDictionary{TKey, TValue}"/>
+        /// This method also returns false if key was not found in the original <see cref="ObservableDictionary{TKey, TValue}"/>.
         /// </returns>
         public bool Remove(TKey key)
         {
@@ -128,17 +134,58 @@ namespace MoreCollections.Observable
         }
 
         /// <summary>
-        /// Removes all items from the ObservableHashedCollection
+        /// Removes all items from the ObservableHashedCollection.
         /// </summary>
         public void Clear()
         {
             ClearWithNotification();
         }
 
-        private List<string> propertiesToUpdate = new List<string> { "Count", "Keys", "Values" };
+        /// <inheritdoc/>
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            TryAddWithNotification(item);
+        }
+
+        /// <inheritdoc/>
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return _dictionary.Contains(item);
+        }
+
+        /// <inheritdoc/>
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            TValue temp;
+            return TryRemoveWithNotification(item.Key, out temp);
+        }
+
+        /// <inheritdoc/>
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+        {
+            return _dictionary.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+        {
+            return _dictionary.Values.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _dictionary.GetEnumerator();
+        }
 
         /// <summary>
-        /// Implements update of bound properties
+        /// Implements update of bound properties.
         /// </summary>
         protected virtual void NotifyObserversOfChange()
         {
@@ -152,7 +199,7 @@ namespace MoreCollections.Observable
                         collectionHandler?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
                         if (propertyHandler != null)
                         {
-                            foreach (string property in propertiesToUpdate)
+                            foreach (string property in _propertiesToUpdate)
                             {
                                 propertyHandler(this, new PropertyChangedEventArgs(property));
                             }
@@ -198,53 +245,6 @@ namespace MoreCollections.Observable
         {
             _dictionary.Clear();
             NotifyObserversOfChange();
-        }
-
-        /// <summary>
-        /// Adds an item to the <see cref="ObservableDictionary{TKey, TValue}"/>
-        /// </summary>
-        /// <param name="item">The object to add to the <see cref="ObservableDictionary{TKey, TValue}"/></param>
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            TryAddWithNotification(item);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return _dictionary.Contains(item);
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            TValue temp;
-            return TryRemoveWithNotification(item.Key, out temp);
-        }
-
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
-        {
-            return _dictionary.GetEnumerator();
-        }
-
-        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        {
-            return _dictionary.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _dictionary.GetEnumerator();
-        }
-
-        IEnumerator GetEnumerator()
-        {
-            return ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).GetEnumerator();
         }
     }
 }
