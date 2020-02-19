@@ -94,6 +94,7 @@ namespace MoreCollections.Generic
             T value = this[0];
             this[0] = default(T);
             frontInternalIndex++;
+            CheckAndUnreserveFront();
             return value;
         }
 
@@ -173,6 +174,19 @@ namespace MoreCollections.Generic
             if (map[realChunk] == null)
             {
                 map[realChunk] = new T[chunkSize];
+            }
+        }
+
+        /// <summary>
+        /// Checks if the first chunk is empty and clears it from reference
+        /// </summary>
+        private void CheckAndUnreserveFront()
+        {
+            if (GetInternalChunkFromInternal(frontInternalIndex) > frontInternalChunkIndex)
+            {
+                int realChunk = GetInternalChunkFromInternal(frontInternalIndex);
+                map[realChunk] = null;
+                backInternalChunkIndex--;
             }
         }
 
