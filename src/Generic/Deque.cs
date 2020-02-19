@@ -246,16 +246,9 @@ namespace MoreCollections.Generic
         {
             get
             {
-                int capacity = 0;
-                foreach (T[] shard in map)
-                {
-                    if (shard != null)
-                    {
-                        capacity += shard.Length;
-                    }
-                }
-
-                return capacity;
+                int firstChunk = GetRealIndexesFromExternal(0).Item1;
+                int lastChunk = GetRealIndexesFromExternal(Count - 1).Item1;
+                return ((lastChunk - firstChunk) + 1) * chunkSize;
             }
         }
 
