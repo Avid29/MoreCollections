@@ -1,47 +1,43 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MoreCollections.Generic;
+using System.Xml;
 
 namespace CollectionsTest
 {
     [TestClass]
     public class DequeTest
     {
-        private Deque<int> deque;
 
-        public DequeTest()
+        [TestMethod]
+        public void BasicTest1()
         {
-            deque = new Deque<int>();
+            Deque<int> deque = new Deque<int>();
+            deque.PushFront(2);
+            int value = deque.PopFront();
+            Assert.AreEqual(2, value);
         }
 
         [TestMethod]
-        public void DequeTest1()
+        public void CountTest1()
         {
-            deque.PushFront(1);
-            deque.PushFront(10);
-            deque.PushBack(5);
+            Deque<int> deque = new Deque<int>(8);
             deque.PushFront(2);
+            deque.PushFront(1);
+            deque.PushBack(3);
+            deque.PushBack(4);
             deque.PushBack(5);
-            deque.PushBack(5);
-            deque.PushFront(10);
-            deque.PushFront(4);
-            deque.PushFront(60);
-            deque.PushFront(54);
-            deque.PushFront(14);
-            deque.PushFront(10);
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            deque[1] = 8;
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            deque.PopBack();
-            var value = deque.PopBack();
+            Assert.AreEqual(5, deque.Capacity);
+        }
 
-            Assert.AreEqual(8, value);
+        [TestMethod]
+        public void CapacityTest1()
+        {
+            Deque<int> deque = new Deque<int>(8);
+            deque.PushFront(2);
+            deque.PushFront(1);
+            deque.PushBack(3);
+            deque.PushBack(4);
+            Assert.AreEqual(8, deque.Capacity);
         }
     }
 }
