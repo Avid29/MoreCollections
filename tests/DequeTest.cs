@@ -147,5 +147,19 @@ namespace CollectionsTest
             }
             Assert.IsTrue(equal);
         }
+
+        [TestMethod]
+        public void Enumerate()
+        {
+            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+            Deque<int> deque = new Deque<int>(list);
+
+            int i = 0;
+            foreach(int value in deque)
+            {
+                Assert.AreEqual(list[i], value);
+                i++;
+            }
+        }
     }
 }

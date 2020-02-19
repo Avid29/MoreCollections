@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MoreCollections.Generic
@@ -7,7 +8,7 @@ namespace MoreCollections.Generic
     /// Represents a strongly typed <see cref="Deque{T}"/> of objects
     /// </summary>
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/></typeparam>
-    public class Deque<T>
+    public class Deque<T> : IEnumerable<T>
     {
         private const int _DefaultChunkSize = 8;
 
@@ -333,5 +334,15 @@ namespace MoreCollections.Generic
         /// Gets first reserved index using internal indexing system.
         /// </summary>
         private int lastReservedInternalIndex => (backInternalChunkIndex + 1) * chunkSize - 1;
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new DequeEnum<T>(this);
+        }
     }
 }
