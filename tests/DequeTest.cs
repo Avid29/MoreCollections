@@ -26,7 +26,7 @@ namespace CollectionsTest
             deque.PushBack(3);
             deque.PushBack(4);
             deque.PushBack(5);
-            Assert.AreEqual(5, deque.Capacity);
+            Assert.AreEqual(5, deque.Count);
         }
 
         [TestMethod]

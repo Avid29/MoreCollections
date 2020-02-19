@@ -249,7 +249,10 @@ namespace MoreCollections.Generic
                 int capacity = 0;
                 foreach (T[] shard in map)
                 {
-                    capacity += shard.Length;
+                    if (shard != null)
+                    {
+                        capacity += shard.Length;
+                    }
                 }
 
                 return capacity;
