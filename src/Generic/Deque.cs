@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MoreCollections.Generic
 {
@@ -28,6 +29,14 @@ namespace MoreCollections.Generic
             backInternalIndex = frontInternalIndex - 1;
             frontInternalChunkIndex = -1;
             backInternalChunkIndex = 1;
+        }
+
+        public Deque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
+        {
+            foreach (var item in collection)
+            {
+                PushBack(item);
+            }
         }
 
         /// <summary>
@@ -124,7 +133,7 @@ namespace MoreCollections.Generic
                 int additionalChunks = frontInternalChunkIndex * frontInternalChunkIndex;
                 T[][] newMap = new T[map.Length + additionalChunks][];
                 map.CopyTo(newMap, additionalChunks);
-                newMap[additionalChunks] = new T[chunkSize];
+                newMap[additionalChunks - 1] = new T[chunkSize];
                 map = newMap;
                 frontInternalChunkIndex -= additionalChunks;
             }
@@ -148,7 +157,7 @@ namespace MoreCollections.Generic
                 int additionalChunks = backInternalChunkIndex * backInternalChunkIndex;
                 T[][] newMap = new T[map.Length + additionalChunks][];
                 map.CopyTo(newMap, 0);
-                newMap[backInternalChunkIndex + 1] = new T[chunkSize];
+                newMap[backInternalChunkIndex + 2] = new T[chunkSize];
                 map = newMap;
                 backInternalChunkIndex++;
             }
