@@ -1,5 +1,6 @@
 ﻿// Copyright (c) MoreCollections. All rights reserved.
 
+using MoreCollections.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace MoreCollections.Generic
     /// Represents a strongly typed <see cref="Deque{T}"/> of objects.
     /// </summary>
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/>.</typeparam>
-    public class Deque<T> : IEnumerable<T>
+    public class Deque<T> : IDeque<T>
     {
         private const int _DefaultChunkSize = 8;
 

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\src\MoreCollections.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Implimentations\" />
+  </ItemGroup>
+
 </Project>
