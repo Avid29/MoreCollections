@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MoreCollections.Generic;
+﻿using MoreCollections.Generic;
 
-namespace CollectionsTest.Deque.Benchmarks
+namespace Benchmarks.Deque
 {
-    [TestClass]
     public class DynamicDequeBenchmarks : DequeBenchmark
     {
         public DynamicDequeBenchmarks()
@@ -15,19 +13,16 @@ namespace CollectionsTest.Deque.Benchmarks
             }
         }
 
-        [TestMethod]
         public void Initialize()
         {
 
         }
 
-        [TestMethod]
         public void PushBackDeque()
         {
             PushBack();
         }
 
-        [TestMethod]
         public void PushFrontDeque()
         {
             PushFront();

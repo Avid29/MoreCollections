@@ -1,6 +1,6 @@
 ﻿using MoreCollections.Interfaces;
 
-namespace CollectionsTest.Deque.Benchmarks
+namespace Benchmarks.Deque
 {
     public abstract class DequeBenchmark
     {

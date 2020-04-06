@@ -2,15 +2,15 @@
 using MoreCollections.Generic;
 using System.Collections.Generic;
 
-namespace CollectionsTest.Deque.Tests
+namespace CollectionsTest.Deque
 {
     [TestClass]
-    public class ConstantDequeTests : DequeTest
+    public class DynamicDequeTests : DequeTest
     {
         [TestMethod]
         internal void Basic1Constant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new DynamicDeque<int>();
             Basic1();
         }
 
@@ -18,7 +18,7 @@ namespace CollectionsTest.Deque.Tests
         public void GetConstant()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
+            DynamicDeque<int> deque = new DynamicDeque<int>(list, 2);
             Assert.AreEqual(5, deque[4]);
         }
 
@@ -26,7 +26,7 @@ namespace CollectionsTest.Deque.Tests
         public void SetConstant()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
+            DynamicDeque<int> deque = new DynamicDeque<int>(list, 2);
             deque[4] = 10;
             Assert.AreEqual(10, deque[4]);
         }
@@ -34,28 +34,28 @@ namespace CollectionsTest.Deque.Tests
         [TestMethod]
         public void PushFrontConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new DynamicDeque<int>();
             PushFront();
         }
 
         [TestMethod]
         public void PushBackConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new DynamicDeque<int>();
             PushBack();
         }
 
         [TestMethod]
         public void PopFrontConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new DynamicDeque<int>();
             PopFront();
         }
 
         [TestMethod]
         public void PopBackConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new DynamicDeque<int>();
             PopBack();
         }
 

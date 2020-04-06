@@ -3,7 +3,7 @@ using MoreCollections.Generic;
 using MoreCollections.Interfaces;
 using System.Collections.Generic;
 
-namespace CollectionsTest.Deque
+namespace CollectionsTest
 {
     public abstract class DequeTest
     {

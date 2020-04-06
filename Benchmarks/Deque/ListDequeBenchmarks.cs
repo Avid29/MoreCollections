@@ -1,9 +1,7 @@
-﻿using CollectionsTest.Deque.Implimentations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Implementations.Deque;
 
-namespace CollectionsTest.Deque.Benchmarks
+namespace Benchmarks.Deque
 {
-    [TestClass]
     public class ListDequeBenchmarks : DequeBenchmark
     {
         public ListDequeBenchmarks()
@@ -15,19 +13,16 @@ namespace CollectionsTest.Deque.Benchmarks
             }
         }
 
-        [TestMethod]
         public void Initialize()
         {
 
         }
 
-        [TestMethod]
         public void PushBackList()
         {
             PushBack();
         }
 
-        [TestMethod]
         public void PushFrontList()
         {
             PushFront();

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CollectionsTest.Deque.Implimentations
+namespace Implementations.Deque
 {
     public class ListDeque<T> : IDeque<T>
     {
