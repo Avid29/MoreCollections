@@ -8,7 +8,7 @@ namespace CollectionsTest.DequeBenchmarks
     {
         public RealDequeBenchmarks()
         {
-            deque = new Deque<int>();
+            deque = new ConstantDeque<int>();
             for (int i = 0; i < 1_000; i++)
             {
                 deque.PushBack(i);

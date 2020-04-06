@@ -10,7 +10,7 @@ namespace CollectionsTest
         [TestMethod]
         public void Basic1()
         {
-            Deque<int> deque = new Deque<int>();
+            ConstantDeque<int> deque = new ConstantDeque<int>();
             deque.PushFront(2);
             int value = deque.PopFront();
             Assert.AreEqual(2, value);
@@ -20,7 +20,7 @@ namespace CollectionsTest
         public void Get()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            Deque<int> deque = new Deque<int>(list, 2);
+            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
             Assert.AreEqual(5, deque[4]);
         }
 
@@ -28,7 +28,7 @@ namespace CollectionsTest
         public void Set()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            Deque<int> deque = new Deque<int>(list, 2);
+            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
             deque[4] = 10;
             Assert.AreEqual(10, deque[4]);
         }
@@ -36,7 +36,7 @@ namespace CollectionsTest
         [TestMethod]
         public void PushFront()
         {
-            Deque<int> deque = new Deque<int>();
+            ConstantDeque<int> deque = new ConstantDeque<int>();
             deque.PushFront(1);
             deque.PushFront(2);
             deque.PushFront(3);
@@ -57,7 +57,7 @@ namespace CollectionsTest
         [TestMethod]
         public void PushBack()
         {
-            Deque<int> deque = new Deque<int>();
+            ConstantDeque<int> deque = new ConstantDeque<int>();
             deque.PushBack(1);
             deque.PushBack(2);
             deque.PushBack(3);
@@ -78,7 +78,7 @@ namespace CollectionsTest
         [TestMethod]
         public void PopFront()
         {
-            Deque<int> deque = new Deque<int>(2);
+            ConstantDeque<int> deque = new ConstantDeque<int>(2);
             deque.PushFront(1);
             deque.PushFront(2);
             deque.PopFront();
@@ -94,7 +94,7 @@ namespace CollectionsTest
         [TestMethod]
         public void PopBack()
         {
-            Deque<int> deque = new Deque<int>(2);
+            ConstantDeque<int> deque = new ConstantDeque<int>(2);
             deque.PushBack(1);
             deque.PushBack(2);
             deque.PopBack();
@@ -110,7 +110,7 @@ namespace CollectionsTest
         [TestMethod]
         public void Count()
         {
-            Deque<int> deque = new Deque<int>();
+            ConstantDeque<int> deque = new ConstantDeque<int>();
             deque.PushFront(2);
             deque.PushFront(1);
             deque.PushBack(3);
@@ -122,7 +122,7 @@ namespace CollectionsTest
         [TestMethod]
         public void Capacity()
         {
-            Deque<int> deque = new Deque<int>(8);
+            ConstantDeque<int> deque = new ConstantDeque<int>(8);
             deque.PushFront(2);
             deque.PushFront(1);
             deque.PushBack(3);
@@ -134,7 +134,7 @@ namespace CollectionsTest
         public void IEnumerableConstruct()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            Deque<int> deque = new Deque<int>(list);
+            ConstantDeque<int> deque = new ConstantDeque<int>(list);
 
             bool equal = true;
             for (int i = 0; i < list.Count; i++)
@@ -152,7 +152,7 @@ namespace CollectionsTest
         public void Enumerate()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-            Deque<int> deque = new Deque<int>(list);
+            ConstantDeque<int> deque = new ConstantDeque<int>(list);
 
             int i = 0;
             foreach(int value in deque)
