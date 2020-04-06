@@ -16,6 +16,12 @@ namespace CollectionsTest.DequeBenchmarks
         }
 
         [TestMethod]
+        public void Initialize()
+        {
+
+        }
+
+        [TestMethod]
         public void PushBackList()
         {
             PushBack();

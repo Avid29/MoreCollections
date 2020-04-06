@@ -18,7 +18,7 @@ namespace CollectionsTest.DequeBenchmarks
         [TestMethod]
         public void Initialize()
         {
-
+            
         }
 
         [TestMethod]
