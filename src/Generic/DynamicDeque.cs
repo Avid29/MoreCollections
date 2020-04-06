@@ -13,7 +13,7 @@ namespace MoreCollections.Generic
     /// <typeparam name="T">The type of items stored in the <see cref="DynamicDeque{T}"/>.</typeparam>
     public class DynamicDeque<T> : IDeque<T>
     {
-        private const int _DefaultChucnkSize = 8;
+        private const int _DefaultChunkSize = 64;
 
         private T[][] shardings;
 
@@ -33,8 +33,15 @@ namespace MoreCollections.Generic
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class.
         /// </summary>
+        public DynamicDeque() : this(_DefaultChunkSize)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class.
+        /// </summary>
         /// <param name="capacity">Initial capacity of the <see cref="DynamicDeque{T}"/>.</param>
-        public DynamicDeque(int capacity = _DefaultChucnkSize)
+        public DynamicDeque(int capacity)
         {
             shardings = new T[1][];
             shardings[0] = new T[capacity];
@@ -42,6 +49,20 @@ namespace MoreCollections.Generic
             frontInternalIndex = capacity / 2;
             backInternalIndex = frontInternalIndex - 1;
             shardingOffset = 0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class that contains elements
+        /// copied from the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="DynamicDeque{T}"/>.</param>
+        public DynamicDeque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
+        {
+            foreach (var item in collection)
+            {
+                PushBack(item);
+            }
         }
 
         /// <summary>
@@ -139,7 +160,7 @@ namespace MoreCollections.Generic
             T value = this[Count - 1];
             this[Count - 1] = default(T);
             backInternalIndex--;
-            CheckAndUnreserveBack();
+            //CheckAndUnreserveBack();
             return value;
         }
 
