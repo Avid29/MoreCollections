@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CollectionsTest.Implimentations
+namespace CollectionsTest.Deque.Implimentations
 {
     public class LinkedListDeque<T> : IDeque<T>
     {

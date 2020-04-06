@@ -1,7 +1,7 @@
-﻿using CollectionsTest.Implimentations;
+﻿using CollectionsTest.Deque.Implimentations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CollectionsTest.DequeBenchmarks
+namespace CollectionsTest.Deque.Benchmarks
 {
     [TestClass]
     public class ListDequeBenchmarks : DequeBenchmark

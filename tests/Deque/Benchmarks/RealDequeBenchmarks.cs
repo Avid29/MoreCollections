@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MoreCollections.Generic;
 
-namespace CollectionsTest.DequeBenchmarks
+namespace CollectionsTest.Deque.Benchmarks
 {
     [TestClass]
     public class RealDequeBenchmarks : DequeBenchmark

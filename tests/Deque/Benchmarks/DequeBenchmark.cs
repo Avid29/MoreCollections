@@ -1,8 +1,8 @@
 ﻿using MoreCollections.Interfaces;
 
-namespace CollectionsTest.DequeBenchmarks
+namespace CollectionsTest.Deque.Benchmarks
 {
-    public class DequeBenchmark
+    public abstract class DequeBenchmark
     {
         internal IDeque<int> deque;
 
