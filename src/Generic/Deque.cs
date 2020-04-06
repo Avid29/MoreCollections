@@ -13,7 +13,7 @@ namespace MoreCollections.Generic
     /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/>.</typeparam>
     public class Deque<T> : IDeque<T>
     {
-        private const int _DefaultChunkSize = 8;
+        private const int _DefaultChunkSize = 128;
 
         private T[][] map;
 
