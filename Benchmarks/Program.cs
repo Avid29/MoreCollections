@@ -13,6 +13,8 @@ namespace Benchmarks
         static void Main(string[] args)
         {
             BenchmarkRunner.Run<ConstantDequeBenchmarks>();
+            BenchmarkRunner.Run<DynamicDequeBenchmarks>();
+            BenchmarkRunner.Run<ListDequeBenchmarks>();
         }
     }
 }
