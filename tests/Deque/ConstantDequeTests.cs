@@ -34,35 +34,35 @@ namespace CollectionsTest.Deque
         [TestMethod]
         public void PushFrontConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             PushFront();
         }
 
         [TestMethod]
         public void PushBackConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             PushBack();
         }
 
         [TestMethod]
         public void PopFrontConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             PopFront();
         }
 
         [TestMethod]
         public void PopBackConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             PopBack();
         }
 
         [TestMethod]
         public void CountConstant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             Count();
         }
     }

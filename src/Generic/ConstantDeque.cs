@@ -18,14 +18,19 @@ namespace MoreCollections.Generic
         private T[][] map;
 
         /// <summary>
-        /// internal index of first item.
+        /// The real index of the 0th index.
         /// </summary>
-        private int frontInternalIndex;
+        private int firstChunkIndex;
 
         /// <summary>
-        /// internal index of last item.
+        /// index of the first item in the first chunk.
         /// </summary>
-        private int backInternalIndex;
+        private int firstRealIndex;
+
+        /// <summary>
+        /// The number of items in the <see cref="ConstantDeque{T}"/>.
+        /// </summary>
+        private int count;
 
         /// <summary>
         /// Minimum number of items in a shard.
@@ -51,10 +56,8 @@ namespace MoreCollections.Generic
             }
 
             map = new T[3][];
-            map[1] = new T[capacity];
+            map[0] = new T[capacity];
             chunkSize = capacity;
-            frontInternalIndex = capacity / 2;
-            backInternalIndex = frontInternalIndex - 1;
         }
 
         /// <summary>
@@ -72,66 +75,21 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="ConstantDeque{T}"/>.
+        /// Gets the number of items in the <see cref="ConstantDeque{T}"/>.
         /// </summary>
-        public int Count => (backInternalIndex - frontInternalIndex) + 1;
+        public int Count => count;
 
         /// <summary>
-        /// Gets the total number of elements the internal data structure can hold without resizing.
+        /// Gets the chunks size of the Deque.
         /// </summary>
-        public int Capacity
-        {
-            get
-            {
-                int firstChunk = GetRealIndexesFromExternal(0).Item1;
-                int lastChunk = GetRealIndexesFromExternal(Count - 1).Item1;
-                return ((lastChunk - firstChunk) + 1) * chunkSize;
-            }
-        }
+        public int ChunkSize => chunkSize;
 
         /// <summary>
-        /// Gets the internal chunk index of first item in the map.
+        /// Gets the number of chunks in use.
         /// </summary>
-        private int FrontInternalChunkIndex
-        {
-            get
-            {
-                int index = frontInternalIndex / chunkSize;
-                if (frontInternalIndex < 0)
-                {
-                    index--;
-                }
+        private int ActiveChunkCount => (count / chunkSize) + 1;
 
-                return index;
-            }
-        }
-
-        /// <summary>
-        /// Gets the internal chunk index of last item in the map.
-        /// </summary>
-        private int BackInternalChunkIndex
-        {
-            get
-            {
-                int index = backInternalIndex / chunkSize;
-                if (backInternalIndex < 0)
-                {
-                    index--;
-                }
-
-                return index;
-            }
-        }
-
-        /// <summary>
-        /// Gets last reserved index using internal indexing system.
-        /// </summary>
-        private int FirstReservedInternalIndex => FrontInternalChunkIndex * chunkSize;
-
-        /// <summary>
-        /// Gets first reserved index using internal indexing system.
-        /// </summary>
-        private int LastReservedInternalIndex => ((BackInternalChunkIndex + 1) * chunkSize) - 1;
+        private int LastRealIndex => (count + firstRealIndex) % chunkSize;
 
         /// <summary>
         /// Gets or sets the value at <paramref name="index"/>.
@@ -142,15 +100,31 @@ namespace MoreCollections.Generic
         {
             get
             {
-                (int, int) indexes = GetRealIndexesFromExternal(index);
-                return map[indexes.Item1][indexes.Item2];
+                if (index > count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                (int, int) indices = GetRealIndices(index);
+                return map[indices.Item1][indices.Item2];
             }
 
             set
             {
-                (int, int) indexes = GetRealIndexesFromExternal(index);
-                map[indexes.Item1][indexes.Item2] = value;
+                if (index > count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                (int, int) indices = GetRealIndices(index);
+                map[indices.Item1][indices.Item2] = value;
             }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new DequeEnum<T>(this);
         }
 
         /// <summary>
@@ -159,8 +133,17 @@ namespace MoreCollections.Generic
         /// <param name="value">The object to be added to the front of the <see cref="ConstantDeque{T}"/>.</param>
         public void PushFront(T value)
         {
-            frontInternalIndex--;
-            CheckAndReserveFront();
+            count++;
+            CheckAndAllocateFront();
+
+            firstRealIndex--;
+            if (firstRealIndex < 0)
+            {
+                firstChunkIndex = (firstChunkIndex + map.Length - 1) % map.Length;
+                map[firstChunkIndex] = new T[chunkSize];
+                firstRealIndex = chunkSize - 1;
+            }
+
             this[0] = value;
         }
 
@@ -170,9 +153,15 @@ namespace MoreCollections.Generic
         /// <param name="value">The object to be added to the back of the <see cref="ConstantDeque{T}"/>.</param>
         public void PushBack(T value)
         {
-            backInternalIndex++;
-            CheckAndReserveBack();
-            this[Count - 1] = value;
+            count++;
+            CheckAndAllocateBack();
+
+            if (LastRealIndex == 0)
+            {
+                map[ActiveChunkCount - 1] = new T[chunkSize];
+            }
+
+            this[count - 1] = value;
         }
 
         /// <summary>
@@ -183,8 +172,15 @@ namespace MoreCollections.Generic
         {
             T value = this[0];
             this[0] = default(T);
-            frontInternalIndex++;
-            CheckAndUnreserveFront();
+            count--;
+
+            firstRealIndex++;
+            if (firstRealIndex == chunkSize)
+            {
+                firstChunkIndex = (firstChunkIndex + 1) % map.Length;
+                firstRealIndex = 0;
+            }
+
             return value;
         }
 
@@ -194,10 +190,9 @@ namespace MoreCollections.Generic
         /// <returns>The object that is removed from the back of the <see cref="ConstantDeque{T}"/>.</returns>
         public T PopBack()
         {
-            T value = this[Count - 1];
-            this[Count - 1] = default(T);
-            backInternalIndex--;
-            CheckAndUnreserveBack();
+            T value = this[count - 1];
+            this[count - 1] = default(T);
+            count--;
             return value;
         }
 
@@ -216,13 +211,7 @@ namespace MoreCollections.Generic
         /// <returns>The backmost value in the <see cref="ConstantDeque{T}"/>.</returns>
         public T PeekBack()
         {
-            return this[Count - 1];
-        }
-
-        /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new DequeEnum<T>(this);
+            return this[count - 1];
         }
 
         /// <inheritdoc/>
@@ -231,148 +220,58 @@ namespace MoreCollections.Generic
             return (IEnumerator)GetEnumerator();
         }
 
-        /// <summary>
-        /// Make sure the space for the next front value is allocated.
-        /// </summary>
-        private void CheckAndReserveFront()
+        private (int, int) GetRealIndices(int index)
         {
-            if (frontInternalIndex < FirstReservedInternalIndex)
-            {
-                // More than one chunk space is reserved at a time, but the only one of the new chunks is created
-                int additionalChunks = FrontInternalChunkIndex * FrontInternalChunkIndex;
-                T[][] newMap = new T[map.Length + additionalChunks][];
-                map.CopyTo(newMap, additionalChunks);
-                newMap[additionalChunks - 1] = new T[chunkSize];
-                map = newMap;
-            }
+            int internalChunk = index / chunkSize;
+            int realChunk = (internalChunk + firstChunkIndex) % map.Length;
+            int realIndex = (firstRealIndex + index) % chunkSize;
+            return (realChunk, realIndex);
+        }
 
-            // Make sure chunk exists before adding a value to it
-            int realChunk = GetRealIndexesFromInternal(frontInternalIndex).Item1;
-            if (map[realChunk] == null)
+        private T[] GetVirtualChunk(int chunk)
+        {
+            // TODO: Compare speeds of negative check vs remove.
+
+            // Gets rid of negative by adding chunk map length
+            chunk += firstChunkIndex + map.Length;
+            chunk = chunk % map.Length;
+
+            return map[chunk];
+        }
+
+        private void CheckAndAllocateFront()
+        {
+            if (firstRealIndex == 0 && GetVirtualChunk(-1) != null)
             {
-                map[realChunk] = new T[chunkSize];
+                Reallocate();
+            }
+        }
+
+        private void CheckAndAllocateBack()
+        {
+            if (LastRealIndex == 0 && GetVirtualChunk(ActiveChunkCount) != null)
+            {
+                Reallocate();
             }
         }
 
         /// <summary>
-        /// Make sure the space for the next back value is allocated.
+        /// Doubles allocation size and realligns the chunks.
         /// </summary>
-        private void CheckAndReserveBack()
+        private void Reallocate()
         {
-            if (backInternalIndex >= LastReservedInternalIndex)
+            // Creates a new map with double the chunks
+            T[][] newMap = new T[map.Length * 2][];
+
+            // Copies chunks
+            for (int i = 0; i < map.Length; i++)
             {
-                // More than one chunk space is reserved at a time, but the only one of the new chunks is created
-                int additionalChunks = BackInternalChunkIndex * BackInternalChunkIndex;
-                T[][] newMap = new T[map.Length + additionalChunks][];
-                map.CopyTo(newMap, 0);
-                newMap[BackInternalChunkIndex + 2] = new T[chunkSize];
-                map = newMap;
+                newMap[i] = GetVirtualChunk(i);
             }
 
-            // Make sure chunk exists before adding a value to it
-            int realChunk = GetRealIndexesFromInternal(backInternalIndex).Item1;
-            if (map[realChunk] == null)
-            {
-                map[realChunk] = new T[chunkSize];
-            }
-        }
-
-        /// <summary>
-        /// Checks if the first chunk is empty and clears it from reference.
-        /// </summary>
-        private void CheckAndUnreserveFront()
-        {
-            if (GetInternalChunkFromInternal(frontInternalIndex) > FrontInternalChunkIndex)
-            {
-                int realChunk = GetInternalChunkFromInternal(frontInternalIndex);
-                map[realChunk] = null;
-            }
-        }
-
-        /// <summary>
-        /// Checks if the last chunk is empty and clears it from reference.
-        /// </summary>
-        private void CheckAndUnreserveBack()
-        {
-            if (GetInternalChunkFromInternal(backInternalIndex) < BackInternalChunkIndex)
-            {
-                int realChunk = BackInternalChunkIndex - FrontInternalChunkIndex;
-                map[realChunk] = null;
-            }
-        }
-
-        private int GetInternalChunkFromInternal(int internalIndex)
-        {
-            if (internalIndex < 0)
-            {
-                // index + 1 divided by chunksize, - 1, rounded down is the chunk
-                //
-                // if (chunksize = 2)
-                // -2 -1
-                // -----
-                // -3 -1
-                // -4 -2
-                return ((internalIndex + 1) / chunkSize) - 1;
-            }
-            else
-            {
-                // index divided by chunksize rounded down is the chunk
-                //
-                // if (chunksize = 2)
-                // 0 1 2 3
-                // -------
-                // 0 2 4 6
-                // 1 3 5 7
-                return internalIndex / chunkSize;
-            }
-        }
-
-        /// <summary>
-        /// Gets the real chunk index and chunk offset from an external index.
-        /// </summary>
-        /// <param name="externalIndex">External index position in <see cref="ConstantDeque{T}"/>.</param>
-        /// <returns>(realChunk, chunkOffset).</returns>
-        private (int, int) GetRealIndexesFromExternal(int externalIndex)
-        {
-            if (externalIndex >= Count || externalIndex < 0)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            return GetRealIndexesFromInternal(frontInternalIndex + externalIndex);
-        }
-
-        /// <summary>
-        /// Gets the real chunk index and chunk offset from an internal index.
-        /// </summary>
-        /// <param name="internalIndex">Internal index position in <see cref="ConstantDeque{T}"/>.</param>
-        /// <returns>(realChunk, chunkOffset).</returns>
-        private (int, int) GetRealIndexesFromInternal(int internalIndex)
-        {
-            int internalChunk = GetInternalChunkFromInternal(internalIndex);
-
-            // index mod chunksize is how deep in the chunk the index is
-            //
-            // if (chunksize = 3)
-            //    0 1 2 3
-            // ----------
-            // 0: 0 3 6 9
-            // 1: 1 4 7 10
-            // 2: 2 5 8 11
-            int chunkOffset = internalIndex % chunkSize;
-            if (chunkOffset < 0)
-            {
-                // If negative modulus, add chunksize
-                chunkOffset += chunkSize;
-            }
-
-            // finds the map array index from chunk and frontChunk
-            //
-            //
-            // RealChunk     :  0 1 2 3
-            // internalChunk : -1 0 1 2
-            int realChunk = internalChunk - FrontInternalChunkIndex;
-            return (realChunk, chunkOffset);
+            // Adjusts instance to the new map
+            map = newMap;
+            firstChunkIndex = 0;
         }
     }
 }
