@@ -14,6 +14,7 @@ namespace Benchmarks.Deque
             Initialize();
         }
 
+        //[Benchmark]
         public void Initialize()
         {
             deque = new ListDeque<int>();
@@ -33,6 +34,18 @@ namespace Benchmarks.Deque
         public void PushFrontList()
         {
             PushFront();
+        }
+
+        [Benchmark]
+        public void PopBackList()
+        {
+            PopBack();
+        }
+
+        [Benchmark]
+        public void PopFrontList()
+        {
+            PopFront();
         }
     }
 }

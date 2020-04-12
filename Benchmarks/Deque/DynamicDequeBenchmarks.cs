@@ -17,6 +17,7 @@ namespace Benchmarks.Deque
             Initialize();
         }
 
+        //[Benchmark]
         public void Initialize()
         {
             deque = new DynamicDeque<int>(InitialChunkSize);
@@ -27,15 +28,27 @@ namespace Benchmarks.Deque
         }
 
         [Benchmark]
-        public void PushBackDeque()
+        public void PushBackDynamic()
         {
             PushBack();
         }
 
         [Benchmark]
-        public void PushFrontDeque()
+        public void PushFrontDynamic()
         {
             PushFront();
+        }
+
+        [Benchmark]
+        public void PopBackDynamic()
+        {
+            PopBack();
+        }
+
+        [Benchmark]
+        public void PopFrontDynamic()
+        {
+            PopFront();
         }
     }
 }

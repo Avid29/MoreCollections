@@ -15,5 +15,15 @@ namespace Benchmarks.Deque
         {
             deque.PushFront(0);
         }
+
+        internal void PopBack()
+        {
+            deque.PopBack();
+        }
+
+        internal void PopFront()
+        {
+            deque.PopFront();
+        }
     }
 }
