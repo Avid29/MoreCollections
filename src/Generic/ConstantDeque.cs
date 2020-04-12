@@ -264,10 +264,9 @@ namespace MoreCollections.Generic
             T[][] newMap = new T[map.Length * 2][];
 
             // Copies chunks
-            for (int i = 0; i < map.Length; i++)
-            {
-                newMap[i] = map[GetVirtualChunk(i)];
-            }
+            int firstSegmentLength = map.Length - firstChunkIndex;
+            Array.Copy(map, firstChunkIndex, newMap, 0, firstSegmentLength);
+            Array.Copy(map, 0, newMap, firstSegmentLength, firstChunkIndex);
 
             // Adjusts instance to the new map
             map = newMap;
