@@ -19,3 +19,4 @@
 /tests/bin/Release/netcoreapp3.1
 /src/bin/Release/netstandard2.0
 /Implementations/bin/Release/netstandard2.0
+/Implementations/bin/Debug/netstandard2.0

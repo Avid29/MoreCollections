@@ -8,9 +8,9 @@ namespace CollectionsTest.Deque
     public class ConstantDequeTests : DequeTest
     {
         [TestMethod]
-        internal void Basic1Constant()
+        public void Basic1Constant()
         {
-            deque = new ConstantDeque<int>();
+            deque = new ConstantDeque<int>(2);
             Basic1();
         }
 

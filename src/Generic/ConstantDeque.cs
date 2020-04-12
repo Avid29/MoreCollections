@@ -158,7 +158,7 @@ namespace MoreCollections.Generic
 
             if (LastRealIndex == 0)
             {
-                map[ActiveChunkCount - 1] = new T[chunkSize];
+                map[ActiveChunkCount + firstChunkIndex - 1] = new T[chunkSize];
             }
 
             this[count - 1] = value;
@@ -177,6 +177,7 @@ namespace MoreCollections.Generic
             firstRealIndex++;
             if (firstRealIndex == chunkSize)
             {
+                map[firstChunkIndex] = null;
                 firstChunkIndex = (firstChunkIndex + 1) % map.Length;
                 firstRealIndex = 0;
             }
@@ -228,20 +229,19 @@ namespace MoreCollections.Generic
             return (realChunk, realIndex);
         }
 
-        private T[] GetVirtualChunk(int chunk)
+        private int GetVirtualChunk(int chunk)
         {
             // TODO: Compare speeds of negative check vs remove.
 
             // Gets rid of negative by adding chunk map length
             chunk += firstChunkIndex + map.Length;
-            chunk = chunk % map.Length;
 
-            return map[chunk];
+            return chunk % map.Length;
         }
 
         private void CheckAndAllocateFront()
         {
-            if (firstRealIndex == 0 && GetVirtualChunk(-1) != null)
+            if (firstRealIndex == 0 && map[GetVirtualChunk(-1)] != null)
             {
                 Reallocate();
             }
@@ -249,7 +249,7 @@ namespace MoreCollections.Generic
 
         private void CheckAndAllocateBack()
         {
-            if (LastRealIndex == 0 && GetVirtualChunk(ActiveChunkCount) != null)
+            if (LastRealIndex == 0 && map[GetVirtualChunk(ActiveChunkCount)] != null)
             {
                 Reallocate();
             }
@@ -266,7 +266,7 @@ namespace MoreCollections.Generic
             // Copies chunks
             for (int i = 0; i < map.Length; i++)
             {
-                newMap[i] = GetVirtualChunk(i);
+                newMap[i] = map[GetVirtualChunk(i)];
             }
 
             // Adjusts instance to the new map

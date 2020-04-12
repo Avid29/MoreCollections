@@ -12,6 +12,18 @@ namespace CollectionsTest
         internal void Basic1()
         {
             deque.PushFront(2);
+            deque.PushBack(2);
+            deque.PushFront(2);
+            deque.PushBack(2);
+            deque.PopFront();
+            deque.PopFront();
+            deque.PopFront();
+            deque.PopFront();
+            deque.PushBack(2);
+            deque.PushBack(2);
+            deque.PushBack(2);
+            deque.PushBack(2);
+            deque.PushFront(2);
             int value = deque.PopFront();
             Assert.AreEqual(2, value);
         }
