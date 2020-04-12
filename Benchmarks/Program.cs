@@ -14,9 +14,9 @@ namespace Benchmarks
         static void Main(string[] args)
         {
             List<Summary> summaries = new List<Summary>();
-            //summaries.Add(BenchmarkRunner.Run<ConstantDequeBenchmarks>());
+            summaries.Add(BenchmarkRunner.Run<ConstantDequeBenchmarks>());
             //summaries.Add(BenchmarkRunner.Run<DynamicDequeBenchmarks>());
-            summaries.Add(BenchmarkRunner.Run<ListDequeBenchmarks>());
+            //summaries.Add(BenchmarkRunner.Run<ListDequeBenchmarks>());
 
             // TODO: Log
             Printer.Printer.Print(summaries);

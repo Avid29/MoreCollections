@@ -6,24 +6,42 @@ namespace Benchmarks.Deque
     {
         internal IDeque<int> deque;
 
-        internal void PushBack()
+        internal void PushBackN(int n = 1)
         {
-            deque.PushBack(0);
+            for (int i = 0; i < n; i++)
+            {
+                deque.PushBack(0);
+            }
         }
 
-        internal void PushFront()
+        internal void PushFrontN(int n = 1)
         {
-            deque.PushFront(0);
+            for(int i = 0; i < n; i++)
+            {
+                deque.PushFront(0);
+            }
         }
 
-        internal void PopBack()
+        internal void PopBackN(int n = 1)
         {
-            deque.PopBack();
+            if (deque.Count < n)
+                return;
+
+            for (int i = 0; i < n; i++)
+            {
+                deque.PopBack();
+            }
         }
 
-        internal void PopFront()
+        internal void PopFrontN(int n = 1)
         {
-            deque.PopFront();
+            if (deque.Count < n)
+                return;
+
+            for (int i = 0; i < n; i++)
+            {
+                deque.PopFront();
+            }
         }
     }
 }

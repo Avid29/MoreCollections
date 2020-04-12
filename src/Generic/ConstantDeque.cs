@@ -28,16 +28,6 @@ namespace MoreCollections.Generic
         private int backInternalIndex;
 
         /// <summary>
-        /// internal chunk index of first item in the map.
-        /// </summary>
-        private int frontInternalChunkIndex;
-
-        /// <summary>
-        /// internal chunk index of last item in the map.
-        /// </summary>
-        private int backInternalChunkIndex;
-
-        /// <summary>
         /// Minimum number of items in a shard.
         /// </summary>
         private int chunkSize;
@@ -65,8 +55,6 @@ namespace MoreCollections.Generic
             chunkSize = capacity;
             frontInternalIndex = capacity / 2;
             backInternalIndex = frontInternalIndex - 1;
-            frontInternalChunkIndex = -1;
-            backInternalChunkIndex = 1;
         }
 
         /// <summary>
@@ -102,14 +90,48 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
+        /// Gets the internal chunk index of first item in the map.
+        /// </summary>
+        private int FrontInternalChunkIndex
+        {
+            get
+            {
+                int index = frontInternalIndex / chunkSize;
+                if (frontInternalIndex < 0)
+                {
+                    index--;
+                }
+
+                return index;
+            }
+        }
+
+        /// <summary>
+        /// Gets the internal chunk index of last item in the map.
+        /// </summary>
+        private int BackInternalChunkIndex
+        {
+            get
+            {
+                int index = backInternalIndex / chunkSize;
+                if (backInternalIndex < 0)
+                {
+                    index--;
+                }
+
+                return index;
+            }
+        }
+
+        /// <summary>
         /// Gets last reserved index using internal indexing system.
         /// </summary>
-        private int FirstReservedInternalIndex => frontInternalChunkIndex * chunkSize;
+        private int FirstReservedInternalIndex => FrontInternalChunkIndex * chunkSize;
 
         /// <summary>
         /// Gets first reserved index using internal indexing system.
         /// </summary>
-        private int LastReservedInternalIndex => ((backInternalChunkIndex + 1) * chunkSize) - 1;
+        private int LastReservedInternalIndex => ((BackInternalChunkIndex + 1) * chunkSize) - 1;
 
         /// <summary>
         /// Gets or sets the value at <paramref name="index"/>.
@@ -217,12 +239,11 @@ namespace MoreCollections.Generic
             if (frontInternalIndex < FirstReservedInternalIndex)
             {
                 // More than one chunk space is reserved at a time, but the only one of the new chunks is created
-                int additionalChunks = frontInternalChunkIndex * frontInternalChunkIndex;
+                int additionalChunks = FrontInternalChunkIndex * FrontInternalChunkIndex;
                 T[][] newMap = new T[map.Length + additionalChunks][];
                 map.CopyTo(newMap, additionalChunks);
                 newMap[additionalChunks - 1] = new T[chunkSize];
                 map = newMap;
-                frontInternalChunkIndex -= additionalChunks;
             }
 
             // Make sure chunk exists before adding a value to it
@@ -241,12 +262,11 @@ namespace MoreCollections.Generic
             if (backInternalIndex >= LastReservedInternalIndex)
             {
                 // More than one chunk space is reserved at a time, but the only one of the new chunks is created
-                int additionalChunks = backInternalChunkIndex * backInternalChunkIndex;
+                int additionalChunks = BackInternalChunkIndex * BackInternalChunkIndex;
                 T[][] newMap = new T[map.Length + additionalChunks][];
                 map.CopyTo(newMap, 0);
-                newMap[backInternalChunkIndex + 2] = new T[chunkSize];
+                newMap[BackInternalChunkIndex + 2] = new T[chunkSize];
                 map = newMap;
-                backInternalChunkIndex++;
             }
 
             // Make sure chunk exists before adding a value to it
@@ -262,11 +282,10 @@ namespace MoreCollections.Generic
         /// </summary>
         private void CheckAndUnreserveFront()
         {
-            if (GetInternalChunkFromInternal(frontInternalIndex) > frontInternalChunkIndex)
+            if (GetInternalChunkFromInternal(frontInternalIndex) > FrontInternalChunkIndex)
             {
                 int realChunk = GetInternalChunkFromInternal(frontInternalIndex);
                 map[realChunk] = null;
-                backInternalChunkIndex--;
             }
         }
 
@@ -275,11 +294,10 @@ namespace MoreCollections.Generic
         /// </summary>
         private void CheckAndUnreserveBack()
         {
-            if (GetInternalChunkFromInternal(backInternalIndex) < backInternalChunkIndex)
+            if (GetInternalChunkFromInternal(backInternalIndex) < BackInternalChunkIndex)
             {
-                int realChunk = backInternalChunkIndex - frontInternalChunkIndex;
+                int realChunk = BackInternalChunkIndex - FrontInternalChunkIndex;
                 map[realChunk] = null;
-                backInternalChunkIndex--;
             }
         }
 
@@ -353,7 +371,7 @@ namespace MoreCollections.Generic
             //
             // RealChunk     :  0 1 2 3
             // internalChunk : -1 0 1 2
-            int realChunk = internalChunk - frontInternalChunkIndex;
+            int realChunk = internalChunk - FrontInternalChunkIndex;
             return (realChunk, chunkOffset);
         }
     }

@@ -5,12 +5,19 @@ using MoreCollections.Generic;
 
 namespace Benchmarks.Deque
 {
+    [JsonExporter]
+    [JsonExporterAttribute.Full]
+    [JsonExporterAttribute.Brief]
     public class ConstantDequeBenchmarks : DequeBenchmark
     {
         [Params(1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
         public int Items;
 
-        [Params(8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096)]
+        [Params(1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
+        public int NewItems;
+
+        //[Params(8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096)]
+        [Params(8, 256, 512, 1024, 4096)]
         public int ChunkSize;
 
         [IterationSetup]
@@ -23,8 +30,9 @@ namespace Benchmarks.Deque
         public void Initialize()
         {
             // Actually running this would take way too long. Throw away the results.
-            if (ChunkSize < 32 && Items > 2000)
+            if (ChunkSize < 32 && (Items > 2000 || NewItems > 2000))
             {
+                NewItems = 0;
                 deque = new ConstantDeque<int>(new int[] { 0, 1, 2, 3, 4 }, ChunkSize);
                 return;
             }
@@ -39,25 +47,25 @@ namespace Benchmarks.Deque
         [Benchmark]
         public void PushBackConstant()
         {
-            PushBack();
+            PushBackN(NewItems);
         }
 
         [Benchmark]
         public void PushFrontConstant()
         {
-            PushFront();
+            PushFrontN(NewItems);
         }
 
         [Benchmark]
         public void PopBackConstant()
         {
-            PopBack();
+            PopBackN(NewItems);
         }
 
         [Benchmark]
         public void PopFrontConstant()
         {
-            PopFront();
+            PopFrontN(NewItems);
         }
     }
 }

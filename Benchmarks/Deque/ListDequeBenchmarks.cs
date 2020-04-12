@@ -5,8 +5,11 @@ namespace Benchmarks.Deque
 {
     public class ListDequeBenchmarks : DequeBenchmark
     {
-        [Params(1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
+        [Params(0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
         public int Items;
+
+        [Params(1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
+        public int NewItems;
 
         [IterationSetup]
         public void Setup()
@@ -27,25 +30,25 @@ namespace Benchmarks.Deque
         [Benchmark]
         public void PushBackList()
         {
-            PushBack();
+            PushBackN(NewItems);
         }
 
         [Benchmark]
         public void PushFrontList()
         {
-            PushFront();
+            PushFrontN(NewItems);
         }
 
         [Benchmark]
         public void PopBackList()
         {
-            PopBack();
+            PopBackN(NewItems);
         }
 
         [Benchmark]
         public void PopFrontList()
         {
-            PopFront();
+            PopFrontN(NewItems);
         }
     }
 }
