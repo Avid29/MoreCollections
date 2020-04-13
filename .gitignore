@@ -20,3 +20,6 @@
 /src/bin/Release/netstandard2.0
 /Implementations/bin/Release/netstandard2.0
 /Implementations/bin/Debug/netstandard2.0
+/ReformatBenchmarks/obj
+/ReformatBenchmarks/bin
+/ReformatBenchmarks/Properties

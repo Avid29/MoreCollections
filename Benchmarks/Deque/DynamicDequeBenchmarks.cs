@@ -14,7 +14,8 @@ namespace Benchmarks.Deque
         [Params(1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000)]
         public int NewItems;
 
-        [Params(8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096)]
+        //[Params(8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096)]
+        [Params(8, 256, 512, 1024, 4096)]
         public int InitialChunkSize;
 
         [IterationSetup]
