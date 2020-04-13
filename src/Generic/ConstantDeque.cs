@@ -121,12 +121,6 @@ namespace MoreCollections.Generic
             }
         }
 
-        /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new DequeEnum<T>(this);
-        }
-
         /// <summary>
         /// Adds an object to the Front of the <see cref="ConstantDeque{T}"/>.
         /// </summary>
@@ -216,6 +210,12 @@ namespace MoreCollections.Generic
         }
 
         /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new DequeEnum<T>(this);
+        }
+
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator)GetEnumerator();
@@ -264,6 +264,7 @@ namespace MoreCollections.Generic
             T[][] newMap = new T[map.Length * 2][];
 
             // Copies chunks
+            // TODO: Try conditional front < back.
             int firstSegmentLength = map.Length - firstChunkIndex;
             Array.Copy(map, firstChunkIndex, newMap, 0, firstSegmentLength);
             Array.Copy(map, 0, newMap, firstSegmentLength, firstChunkIndex);
