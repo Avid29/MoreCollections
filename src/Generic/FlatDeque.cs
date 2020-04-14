@@ -102,13 +102,12 @@ namespace MoreCollections.Generic
         public void PushFront(T value)
         {
             int newFront = (frontIndex - 1 + items.Length) % items.Length;
-            if (newFront == BackIndex)
+            if (items.Length == ++count)
             {
                 Reallocate();
                 newFront = items.Length - 1;
             }
 
-            count++;
             frontIndex = newFront;
             items[newFront] = value;
         }
@@ -120,13 +119,12 @@ namespace MoreCollections.Generic
         public void PushBack(T value)
         {
             int newBack = (BackIndex + 1) % items.Length;
-            if (newBack == frontIndex && count != 0)
+            if (items.Length == ++count)
             {
                 Reallocate();
-                newBack = count;
+                newBack = count - 1;
             }
 
-            count++;
             items[newBack] = value;
         }
 
