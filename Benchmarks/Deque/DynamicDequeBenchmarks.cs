@@ -37,25 +37,25 @@ namespace Benchmarks.Deque
         [Benchmark]
         public void PushBackDynamic()
         {
-            PushBackN();
+            PushBackN(NewItems);
         }
 
         [Benchmark]
         public void PushFrontDynamic()
         {
-            PushFrontN();
+            PushFrontN(NewItems);
         }
 
         [Benchmark]
         public void PopBackDynamic()
         {
-            PopBackN();
+            PopBackN(NewItems);
         }
 
         [Benchmark]
         public void PopFrontDynamic()
         {
-            PopFrontN();
+            PopFrontN(NewItems);
         }
     }
 }

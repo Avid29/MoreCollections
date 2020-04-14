@@ -25,7 +25,7 @@ namespace Benchmarks.Deque
         //[Benchmark]
         public void Initialize()
         {
-            deque = new ConstantDeque<int>();
+            deque = new FlatDeque<int>();
             for (int i = 0; i < Items; i++)
             {
                 deque.PushBack(i);
