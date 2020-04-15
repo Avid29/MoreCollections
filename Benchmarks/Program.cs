@@ -7,10 +7,10 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<FlatDequeBenchmarks>();
-            //BenchmarkRunner.Run<ConstantDequeBenchmarks>();
+            //BenchmarkRunner.Run<FlatDequeBenchmarks>();
+            BenchmarkRunner.Run<ConstantDequeBenchmarks>();
             //BenchmarkRunner.Run<ConstantOldDequeBenchmarks>();
-            BenchmarkRunner.Run<DynamicDequeBenchmarks>();
+            //BenchmarkRunner.Run<DynamicDequeBenchmarks>();
             //BenchmarkRunner.Run<ListDequeBenchmarks>();
         }
     }

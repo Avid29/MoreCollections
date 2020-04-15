@@ -138,7 +138,7 @@ namespace MoreCollections.Generic
                 firstRealIndex = chunkSize - 1;
             }
 
-            this[0] = value;
+            map[firstChunkIndex][firstRealIndex] = value;
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace MoreCollections.Generic
         /// <returns>The frontmost value in the <see cref="ConstantDeque{T}"/>.</returns>
         public T PeekFront()
         {
-            return this[0];
+            return map[firstChunkIndex][firstRealIndex];
         }
 
         /// <summary>
