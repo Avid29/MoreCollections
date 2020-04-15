@@ -7,6 +7,7 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
+            BenchmarkRunner.Run<IdealDequeBenchmarks>();
             BenchmarkRunner.Run<FlatDequeBenchmarks>();
             //BenchmarkRunner.Run<ConstantDequeBenchmarks>();
             //BenchmarkRunner.Run<ConstantOldDequeBenchmarks>();
