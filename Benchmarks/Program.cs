@@ -9,10 +9,10 @@ namespace Benchmarks
         {
             BenchmarkRunner.Run<IdealDequeBenchmarks>();
             BenchmarkRunner.Run<FlatDequeBenchmarks>();
-            //BenchmarkRunner.Run<ConstantDequeBenchmarks>();
-            //BenchmarkRunner.Run<ConstantOldDequeBenchmarks>();
-            //BenchmarkRunner.Run<DynamicDequeBenchmarks>();
-            //BenchmarkRunner.Run<ListDequeBenchmarks>();
+            BenchmarkRunner.Run<ConstantDequeBenchmarks>();
+            BenchmarkRunner.Run<DynamicDequeBenchmarks>();
+            BenchmarkRunner.Run<ListDequeBenchmarks>();
+            BenchmarkRunner.Run<ConstantOldDequeBenchmarks>();
         }
     }
 }

@@ -33,25 +33,25 @@ namespace Benchmarks.Deque
         }
 
         [Benchmark]
-        public void PushBackFlat()
+        public void PushBackIdeal()
         {
             PushBackN(NewItems);
         }
 
         [Benchmark]
-        public void PushFrontFlat()
+        public void PushFrontIdeal()
         {
             PushFrontN(NewItems);
         }
 
         [Benchmark]
-        public void PopBackFlat()
+        public void PopBackIdeal()
         {
             PopBackN(NewItems);
         }
 
         [Benchmark]
-        public void PopFrontFlat()
+        public void PopFrontIdeal()
         {
             PopFrontN(NewItems);
         }
