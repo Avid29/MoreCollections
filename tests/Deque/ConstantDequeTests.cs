@@ -10,7 +10,7 @@ namespace CollectionsTest.Deque
         [TestMethod]
         public void Basic1Constant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             Basic1();
         }
 
@@ -18,7 +18,7 @@ namespace CollectionsTest.Deque
         public void GetConstant()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
+            GridDeque<int> deque = new GridDeque<int>(list, 2);
             Assert.AreEqual(5, deque[4]);
         }
 
@@ -26,7 +26,7 @@ namespace CollectionsTest.Deque
         public void SetConstant()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list, 2);
+            GridDeque<int> deque = new GridDeque<int>(list, 2);
             deque[4] = 10;
             Assert.AreEqual(10, deque[4]);
         }
@@ -34,35 +34,35 @@ namespace CollectionsTest.Deque
         [TestMethod]
         public void PushFrontConstant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             PushFront();
         }
 
         [TestMethod]
         public void PushBackConstant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             PushBack();
         }
 
         [TestMethod]
         public void PopFrontConstant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             PopFront();
         }
 
         [TestMethod]
         public void PopBackConstant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             PopBack();
         }
 
         [TestMethod]
         public void CountConstant()
         {
-            deque = new ConstantDeque<int>(2);
+            deque = new GridDeque<int>(2);
             Count();
         }
     }

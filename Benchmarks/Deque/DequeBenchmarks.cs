@@ -8,7 +8,7 @@ namespace Benchmarks.Deque
     [JsonExporter]
     [JsonExporterAttribute.Full]
     [JsonExporterAttribute.Brief]
-    public class IdealDequeBenchmarks : DequeBenchmark
+    public class DequeBenchmarks : DequeBenchmark
     {
         [Params(0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 1_000_000)]
         public int Items;
@@ -25,7 +25,7 @@ namespace Benchmarks.Deque
         //[Benchmark]
         public void Initialize()
         {
-            deque = new FlatDeque<int>(Items + NewItems);
+            deque = new Deque<int>();
             for (int i = 0; i < Items; i++)
             {
                 deque.PushBack(i);
@@ -33,25 +33,25 @@ namespace Benchmarks.Deque
         }
 
         [Benchmark]
-        public void PushBackFlat()
+        public void PushBack()
         {
             PushBackN(NewItems);
         }
 
         [Benchmark]
-        public void PushFrontFlat()
+        public void PushFront()
         {
             PushFrontN(NewItems);
         }
 
         [Benchmark]
-        public void PopBackFlat()
+        public void PopBack()
         {
             PopBackN(NewItems);
         }
 
         [Benchmark]
-        public void PopFrontFlat()
+        public void PopFront()
         {
             PopFrontN(NewItems);
         }

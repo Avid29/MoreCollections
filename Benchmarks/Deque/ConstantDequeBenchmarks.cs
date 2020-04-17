@@ -34,11 +34,11 @@ namespace Benchmarks.Deque
             if (ChunkSize < 32 && (Items > 2000 || NewItems > 2000))
             {
                 NewItems = 0;
-                deque = new ConstantDeque<int>(new int[] { 0, 1, 2, 3, 4 }, ChunkSize);
+                deque = new GridDeque<int>(new int[] { 0, 1, 2, 3, 4 }, ChunkSize);
                 return;
             }
 
-            deque = new ConstantDeque<int>(ChunkSize);
+            deque = new GridDeque<int>(ChunkSize);
             for (int i = 0; i < Items; i++)
             {
                 deque.PushBack(i);

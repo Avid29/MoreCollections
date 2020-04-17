@@ -1,17 +1,22 @@
 ﻿// Copyright (c) MoreCollections. All rights reserved.
 
+using MoreCollections.Generic;
 using MoreCollections.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MoreCollections.Generic
+namespace AllCollections.Generic
 {
     /// <summary>
     /// An <see cref="IDeque{T}"/> implementation that has dynamic chunk size by distance from zero.
     /// </summary>
-    /// <typeparam name="T">The type of items stored in the <see cref="DynamicDeque{T}"/>.</typeparam>
-    public class DynamicDeque<T> : IDeque<T>
+    /// <remarks>
+    /// A <see cref="IDeque{T}"/> that uses a 2D array to lower copy count on reallocation at the cost of extra overhead and more frequent allocations. The size of the chunks gets larger as the count grows.
+    /// Items stored in <see cref="DynamicGridDeque{T}"/> have constant pointers because the items themselves aren't copied.
+    /// </remarks>
+    /// <typeparam name="T">The type of items stored in the <see cref="DynamicGridDeque{T}"/>.</typeparam>
+    public class DynamicGridDeque<T> : IDeque<T>
     {
         private const int _DefaultChunkSize = 64;
 
@@ -31,17 +36,17 @@ namespace MoreCollections.Generic
         private int shardingOffset;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class.
+        /// Initializes a new instance of the <see cref="DynamicGridDeque{T}"/> class.
         /// </summary>
-        public DynamicDeque() : this(_DefaultChunkSize)
+        public DynamicGridDeque() : this(_DefaultChunkSize)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class.
+        /// Initializes a new instance of the <see cref="DynamicGridDeque{T}"/> class.
         /// </summary>
-        /// <param name="capacity">Initial capacity of the <see cref="DynamicDeque{T}"/>.</param>
-        public DynamicDeque(int capacity)
+        /// <param name="capacity">Initial capacity of the <see cref="DynamicGridDeque{T}"/>.</param>
+        public DynamicGridDeque(int capacity)
         {
             shardings = new T[1][];
             shardings[0] = new T[capacity];
@@ -52,12 +57,12 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicDeque{T}"/> class that contains elements
+        /// Initializes a new instance of the <see cref="DynamicGridDeque{T}"/> class that contains elements
         /// copied from the specified collection.
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
-        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="DynamicDeque{T}"/>.</param>
-        public DynamicDeque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
+        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="DynamicGridDeque{T}"/>.</param>
+        public DynamicGridDeque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
         {
             foreach (var item in collection)
             {
@@ -66,7 +71,7 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="DynamicDeque{T}"/>.
+        /// Gets the number of elements contained in the <see cref="DynamicGridDeque{T}"/>.
         /// </summary>
         public int Count => (backInternalIndex - frontInternalIndex) + 1;
 
@@ -129,9 +134,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Adds an object to the back of the <see cref="DynamicDeque{T}"/>.
+        /// Adds an object to the back of the <see cref="DynamicGridDeque{T}"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the back of the <see cref="DynamicDeque{T}"/>.</param>
+        /// <param name="value">The object to be added to the back of the <see cref="DynamicGridDeque{T}"/>.</param>
         public void PushBack(T value)
         {
             backInternalIndex++;
@@ -140,9 +145,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Removes and returns the object at the front of the <see cref="DynamicDeque{T}"/>.
+        /// Removes and returns the object at the front of the <see cref="DynamicGridDeque{T}"/>.
         /// </summary>
-        /// <returns>The object that is removed from the front of the <see cref="DynamicDeque{T}"/>.</returns>
+        /// <returns>The object that is removed from the front of the <see cref="DynamicGridDeque{T}"/>.</returns>
         public T PopFront()
         {
             T value = this[0];
@@ -160,7 +165,7 @@ namespace MoreCollections.Generic
             T value = this[Count - 1];
             this[Count - 1] = default(T);
             backInternalIndex--;
-            //CheckAndUnreserveBack();
+            // CheckAndUnreserveBack();
             return value;
         }
 

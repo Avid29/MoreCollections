@@ -8,10 +8,10 @@ using System.Collections.Generic;
 namespace MoreCollections.Generic
 {
     /// <summary>
-    /// Represents a strongly typed <see cref="FlatDeque{T}"/> of objects.
+    /// Represents a strongly typed <see cref="Deque{T}"/> of objects.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the <see cref="FlatDeque{T}"/>.</typeparam>
-    public class FlatDeque<T> : IDeque<T>
+    /// <typeparam name="T">The type of elements in the <see cref="Deque{T}"/>.</typeparam>
+    public class Deque<T> : IDeque<T>
     {
         private const int _DefaultSize = 4;
 
@@ -23,33 +23,33 @@ namespace MoreCollections.Generic
         private int frontIndex;
 
         /// <summary>
-        /// The number of items in the <see cref="FlatDeque{T}"/>.
+        /// The number of items in the <see cref="Deque{T}"/>.
         /// </summary>
         private int count;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlatDeque{T}"/> class.
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class.
         /// </summary>
-        public FlatDeque() : this(_DefaultSize)
+        public Deque() : this(_DefaultSize)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlatDeque{T}"/> class.
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class.
         /// </summary>
         /// <param name="size">The size of the Deque.</param>
-        public FlatDeque(int size)
+        public Deque(int size)
         {
             items = new T[size];
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlatDeque{T}"/> class that contains elements
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class that contains elements
         /// copied from the specified collection.
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
-        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="FlatDeque{T}"/>.</param>
-        public FlatDeque(IEnumerable<T> collection, int chunkSize = _DefaultSize) : this(chunkSize)
+        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="Deque{T}"/>.</param>
+        public Deque(IEnumerable<T> collection, int chunkSize = _DefaultSize) : this(chunkSize)
         {
             foreach (var item in collection)
             {
@@ -58,17 +58,17 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the number of items in the <see cref="FlatDeque{T}"/>.
+        /// Gets the number of items in the <see cref="Deque{T}"/>.
         /// </summary>
         public int Count => count;
 
         /// <summary>
-        /// Gets the index of the last item in the <see cref="FlatDeque{T}"/>.
+        /// Gets the index of the last item in the <see cref="Deque{T}"/>.
         /// </summary>
         private int BackIndex => (frontIndex + count - 1) % items.Length;
 
         /// <summary>
-        /// Gets or sets the value at <paramref name="index"/> in the <see cref="FlatDeque{T}"/>.
+        /// Gets or sets the value at <paramref name="index"/> in the <see cref="Deque{T}"/>.
         /// </summary>
         /// <param name="index">The index to get or set.</param>
         /// <returns>The value at <paramref name="index"/>.</returns>
@@ -96,9 +96,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Adds an object to the Front of the <see cref="FlatDeque{T}"/>.
+        /// Adds an object to the Front of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the front of the <see cref="FlatDeque{T}"/>.</param>
+        /// <param name="value">The object to be added to the front of the <see cref="Deque{T}"/>.</param>
         public void PushFront(T value)
         {
             int newFront = (frontIndex - 1 + items.Length) % items.Length;
@@ -113,9 +113,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Adds an object to the back of the <see cref="FlatDeque{T}"/>.
+        /// Adds an object to the back of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the back of the <see cref="FlatDeque{T}"/>.</param>
+        /// <param name="value">The object to be added to the back of the <see cref="Deque{T}"/>.</param>
         public void PushBack(T value)
         {
             int newBack = (BackIndex + 1) % items.Length;
@@ -129,9 +129,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Removes and returns the object at the front of the <see cref="FlatDeque{T}"/>.
+        /// Removes and returns the object at the front of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <returns>The object that is removed from the front of the <see cref="FlatDeque{T}"/>.</returns>
+        /// <returns>The object that is removed from the front of the <see cref="Deque{T}"/>.</returns>
         public T PopFront()
         {
             T value = items[frontIndex];
@@ -143,9 +143,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Removes and returns the object at the back of the <see cref="FlatDeque{T}"/>.
+        /// Removes and returns the object at the back of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <returns>The object that is removed from the back of the <see cref="FlatDeque{T}"/>.</returns>
+        /// <returns>The object that is removed from the back of the <see cref="Deque{T}"/>.</returns>
         public T PopBack()
         {
             T value = this[count - 1];
@@ -156,18 +156,18 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the value from the front of the <see cref="FlatDeque{T}"/>.
+        /// Gets the value from the front of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <returns>The frontmost value in the <see cref="FlatDeque{T}"/>.</returns>
+        /// <returns>The frontmost value in the <see cref="Deque{T}"/>.</returns>
         public T PeekFront()
         {
             return items[frontIndex];
         }
 
         /// <summary>
-        /// Gets the value from the back of the <see cref="FlatDeque{T}"/>.
+        /// Gets the value from the back of the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <returns>The backmost value in the <see cref="FlatDeque{T}"/>.</returns>
+        /// <returns>The backmost value in the <see cref="Deque{T}"/>.</returns>
         public T PeekBack()
         {
             return items[BackIndex];

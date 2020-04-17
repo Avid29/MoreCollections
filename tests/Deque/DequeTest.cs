@@ -107,7 +107,7 @@ namespace CollectionsTest
         internal void IEnumerableConstruct()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list);
+            GridDeque<int> deque = new GridDeque<int>(list);
 
             bool equal = true;
             for (int i = 0; i < list.Count; i++)
@@ -124,7 +124,7 @@ namespace CollectionsTest
         internal void Enumerate()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-            ConstantDeque<int> deque = new ConstantDeque<int>(list);
+            GridDeque<int> deque = new GridDeque<int>(list);
 
             int i = 0;
             foreach(int value in deque)

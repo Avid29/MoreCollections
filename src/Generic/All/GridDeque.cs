@@ -1,17 +1,22 @@
 ﻿// Copyright (c) MoreCollections. All rights reserved.
 
+using MoreCollections.Generic;
 using MoreCollections.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MoreCollections.Generic
+namespace AllCollections.Generic
 {
     /// <summary>
-    /// Represents a strongly typed <see cref="ConstantDeque{T}"/> of objects.
+    /// An <see cref="IDeque{T}"/> implementation that has chunks to lower copy operations during reallocation.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the <see cref="ConstantDeque{T}"/>.</typeparam>
-    public class ConstantDeque<T> : IDeque<T>
+    /// <remarks>
+    /// A <see cref="IDeque{T}"/> that uses a 2D array to lower copy count on reallocation at the cost of extra overhead and more frequent allocations. The size of the chunks is constant.
+    /// Items stored in <see cref="GridDeque{T}"/> have constant pointers because the items themselves aren't copied.
+    /// </remarks>
+    /// <typeparam name="T">The type of elements in the <see cref="GridDeque{T}"/>.</typeparam>
+    public class GridDeque<T> : IDeque<T>
     {
         private const int _DefaultChunkSize = 128;
 
@@ -28,7 +33,7 @@ namespace MoreCollections.Generic
         private int firstRealIndex;
 
         /// <summary>
-        /// The number of items in the <see cref="ConstantDeque{T}"/>.
+        /// The number of items in the <see cref="GridDeque{T}"/>.
         /// </summary>
         private int count;
 
@@ -38,17 +43,17 @@ namespace MoreCollections.Generic
         private int chunkSize;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConstantDeque{T}"/> class.
+        /// Initializes a new instance of the <see cref="GridDeque{T}"/> class.
         /// </summary>
-        public ConstantDeque() : this(_DefaultChunkSize)
+        public GridDeque() : this(_DefaultChunkSize)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConstantDeque{T}"/> class with an initial capcity of <paramref name="capacity"/>.
+        /// Initializes a new instance of the <see cref="GridDeque{T}"/> class with an initial capcity of <paramref name="capacity"/>.
         /// </summary>
-        /// <param name="capacity">Initial capacity of the <see cref="ConstantDeque{T}"/>.</param>
-        public ConstantDeque(int capacity)
+        /// <param name="capacity">Initial capacity of the <see cref="GridDeque{T}"/>.</param>
+        public GridDeque(int capacity)
         {
             if (capacity < 1)
             {
@@ -61,12 +66,12 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConstantDeque{T}"/> class that contains elements
+        /// Initializes a new instance of the <see cref="GridDeque{T}"/> class that contains elements
         /// copied from the specified collection.
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
-        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="ConstantDeque{T}"/>.</param>
-        public ConstantDeque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
+        /// <param name="chunkSize">Amount of memory reserved at a time <see cref="GridDeque{T}"/>.</param>
+        public GridDeque(IEnumerable<T> collection, int chunkSize = _DefaultChunkSize) : this(chunkSize)
         {
             foreach (var item in collection)
             {
@@ -75,7 +80,7 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the number of items in the <see cref="ConstantDeque{T}"/>.
+        /// Gets the number of items in the <see cref="GridDeque{T}"/>.
         /// </summary>
         public int Count => count;
 
@@ -95,7 +100,7 @@ namespace MoreCollections.Generic
         /// Gets or sets the value at <paramref name="index"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>Value at <paramref name="index"/> in <see cref="ConstantDeque{T}"/>.</returns>
+        /// <returns>Value at <paramref name="index"/> in <see cref="GridDeque{T}"/>.</returns>
         public T this[int index]
         {
             get
@@ -122,9 +127,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Adds an object to the Front of the <see cref="ConstantDeque{T}"/>.
+        /// Adds an object to the Front of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the front of the <see cref="ConstantDeque{T}"/>.</param>
+        /// <param name="value">The object to be added to the front of the <see cref="GridDeque{T}"/>.</param>
         public void PushFront(T value)
         {
             count++;
@@ -142,9 +147,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Adds an object to the back of the <see cref="ConstantDeque{T}"/>.
+        /// Adds an object to the back of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <param name="value">The object to be added to the back of the <see cref="ConstantDeque{T}"/>.</param>
+        /// <param name="value">The object to be added to the back of the <see cref="GridDeque{T}"/>.</param>
         public void PushBack(T value)
         {
             count++;
@@ -159,9 +164,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Removes and returns the object at the front of the <see cref="ConstantDeque{T}"/>.
+        /// Removes and returns the object at the front of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <returns>The object that is removed from the front of the <see cref="ConstantDeque{T}"/>.</returns>
+        /// <returns>The object that is removed from the front of the <see cref="GridDeque{T}"/>.</returns>
         public T PopFront()
         {
             T value = this[0];
@@ -180,9 +185,9 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Removes and returns the object at the back of the <see cref="ConstantDeque{T}"/>.
+        /// Removes and returns the object at the back of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <returns>The object that is removed from the back of the <see cref="ConstantDeque{T}"/>.</returns>
+        /// <returns>The object that is removed from the back of the <see cref="GridDeque{T}"/>.</returns>
         public T PopBack()
         {
             T value = this[count - 1];
@@ -192,18 +197,18 @@ namespace MoreCollections.Generic
         }
 
         /// <summary>
-        /// Gets the value from the front of the <see cref="ConstantDeque{T}"/>.
+        /// Gets the value from the front of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <returns>The frontmost value in the <see cref="ConstantDeque{T}"/>.</returns>
+        /// <returns>The frontmost value in the <see cref="GridDeque{T}"/>.</returns>
         public T PeekFront()
         {
             return map[firstChunkIndex][firstRealIndex];
         }
 
         /// <summary>
-        /// Gets the value from the back of the <see cref="ConstantDeque{T}"/>.
+        /// Gets the value from the back of the <see cref="GridDeque{T}"/>.
         /// </summary>
-        /// <returns>The backmost value in the <see cref="ConstantDeque{T}"/>.</returns>
+        /// <returns>The backmost value in the <see cref="GridDeque{T}"/>.</returns>
         public T PeekBack()
         {
             return this[count - 1];

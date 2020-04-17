@@ -27,7 +27,7 @@ namespace Benchmarks.Deque
         //[Benchmark]
         public void Initialize()
         {
-            deque = new DynamicDeque<int>(InitialChunkSize);
+            deque = new DynamicGridDeque<int>(InitialChunkSize);
             for (int i = 0; i < Items; i++)
             {
                 deque.PushBack(i);
