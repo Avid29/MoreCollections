@@ -1,21 +1,21 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MoreCollections.Generic;
+using AllCollections.Generic;
 using System.Collections.Generic;
 
 namespace CollectionsTest.Deque
 {
     [TestClass]
-    public class DynamicDequeTests : DequeTest
+    public class DynamicGridDequeTests : DequeTest
     {
         [TestMethod]
-        internal void Basic1Constant()
+        internal void Basic1Dynamic()
         {
             deque = new DynamicGridDeque<int>();
             Basic1();
         }
 
         [TestMethod]
-        public void GetConstant()
+        public void GetDynamic()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             DynamicGridDeque<int> deque = new DynamicGridDeque<int>(list, 2);
@@ -23,7 +23,7 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void SetConstant()
+        public void SetDynamic()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             DynamicGridDeque<int> deque = new DynamicGridDeque<int>(list, 2);
@@ -32,35 +32,35 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void PushFrontConstant()
+        public void PushFrontDynamic()
         {
             deque = new DynamicGridDeque<int>();
             PushFront();
         }
 
         [TestMethod]
-        public void PushBackConstant()
+        public void PushBackDynamic()
         {
             deque = new DynamicGridDeque<int>();
             PushBack();
         }
 
         [TestMethod]
-        public void PopFrontConstant()
+        public void PopFrontDynamic()
         {
             deque = new DynamicGridDeque<int>();
             PopFront();
         }
 
         [TestMethod]
-        public void PopBackConstant()
+        public void PopBackDynamic()
         {
             deque = new DynamicGridDeque<int>();
             PopBack();
         }
 
         [TestMethod]
-        public void CountConstant()
+        public void CountDynamic()
         {
             deque = new GridDeque<int>();
             Count();

@@ -8,14 +8,14 @@ namespace CollectionsTest.Deque
     public class DequeTests : DequeTest
     {
         [TestMethod]
-        public void Basic1Constant()
+        public void Basic1Deque()
         {
             deque = new Deque<int>(2);
             Basic1();
         }
 
         [TestMethod]
-        public void GetConstant()
+        public void GetDeque()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             Deque<int> deque = new Deque<int>(list, 2);
@@ -23,7 +23,7 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void SetConstant()
+        public void SetDeque()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             Deque<int> deque = new Deque<int>(list, 2);
@@ -32,35 +32,35 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void PushFrontFlat()
+        public void PushFrontDeque()
         {
             deque = new Deque<int>(2);
             PushFront();
         }
 
         [TestMethod]
-        public void PushBackFlat()
+        public void PushBackDeque()
         {
             deque = new Deque<int>(2);
             PushBack();
         }
 
         [TestMethod]
-        public void PopFrontFlat()
+        public void PopFrontDeque()
         {
             deque = new Deque<int>(2);
             PopFront();
         }
 
         [TestMethod]
-        public void PopBackFlat()
+        public void PopBackDeque()
         {
             deque = new Deque<int>(2);
             PopBack();
         }
 
         [TestMethod]
-        public void CountFlat()
+        public void CountDeque()
         {
             deque = new Deque<int>(2);
             Count();

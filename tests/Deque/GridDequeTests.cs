@@ -1,21 +1,21 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MoreCollections.Generic;
+﻿using AllCollections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace CollectionsTest.Deque
 {
     [TestClass]
-    public class ConstantDequeTests : DequeTest
+    public class GridDequeTests : DequeTest
     {
         [TestMethod]
-        public void Basic1Constant()
+        public void Basic1Grid()
         {
             deque = new GridDeque<int>(2);
             Basic1();
         }
 
         [TestMethod]
-        public void GetConstant()
+        public void GetGrid()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             GridDeque<int> deque = new GridDeque<int>(list, 2);
@@ -23,7 +23,7 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void SetConstant()
+        public void SetGrid()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             GridDeque<int> deque = new GridDeque<int>(list, 2);
@@ -32,35 +32,35 @@ namespace CollectionsTest.Deque
         }
 
         [TestMethod]
-        public void PushFrontConstant()
+        public void PushFrontGrid()
         {
             deque = new GridDeque<int>(2);
             PushFront();
         }
 
         [TestMethod]
-        public void PushBackConstant()
+        public void PushBackGrid()
         {
             deque = new GridDeque<int>(2);
             PushBack();
         }
 
         [TestMethod]
-        public void PopFrontConstant()
+        public void PopFrontGrid()
         {
             deque = new GridDeque<int>(2);
             PopFront();
         }
 
         [TestMethod]
-        public void PopBackConstant()
+        public void PopBackGrid()
         {
             deque = new GridDeque<int>(2);
             PopBack();
         }
 
         [TestMethod]
-        public void CountConstant()
+        public void CountGrid()
         {
             deque = new GridDeque<int>(2);
             Count();
